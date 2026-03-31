@@ -1,16 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MailProvider, useMail } from './context/MailContext';
+import { UIProvider, useUI } from './context/UIContext';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { RightPanel } from './components/RightPanel';
 import { MailRow } from './components/MailRow';
 import { MailDetail } from './components/MailDetail';
+import { ThreadView } from './components/mail/ThreadView';
+import { ComposeModal } from './components/compose/ComposeModal';
+import { FilterChips } from './components/mail/FilterChips';
+import { BulkActions } from './components/mail/BulkActions';
 import './App.css';
 
 function MailApp() {
-  const { emails, selectedEmail, setSelectedEmail, markAsRead } = useMail();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [rightPanelOpen, setRightPanelOpen] = useState(false);
+  const { emails, selectedEmail, setSelectedEmail, markAsRead, getActiveThread, currentFolder, setCurrentFolder, toggleStar, deleteEmail, archiveEmail, markAsUnread } = useMail();
+  const { sidebarOpen, setSidebarOpen, rightPanelOpen, setRightPanelOpen, composeOpen, setComposeOpen, selectedEmails, deselectAll } = useUI();
+  const [showThread, setShowThread] = useState(false);
 
   const handleEmailSelect = (email) => {
     setSelectedEmail(email);
@@ -20,6 +25,25 @@ function MailApp() {
     if (window.innerWidth < 1024) {
       setSidebarOpen(false);
     }
+  };
+
+  const handleBackToList = () => {
+    setSelectedEmail(null);
+    setShowThread(false);
+  };
+
+  const handleOpenThread = () => {
+    setShowThread(true);
+  };
+
+  const folderTitles = {
+    inbox: 'Inbox',
+    sent: 'Sent',
+    drafts: 'Drafts',
+    starred: 'Starred',
+    archive: 'Archive',
+    spam: 'Spam',
+    trash: 'Trash',
   };
 
   return (
@@ -32,9 +56,35 @@ function MailApp() {
         <main className="main-content">
           <div className="mail-list">
             <div className="mail-list-header">
-              <h2>Inbox</h2>
+              <h2>{folderTitles[currentFolder] || 'Inbox'}</h2>
               <span className="mail-count">{emails.length} emails</span>
             </div>
+            
+            {currentFolder === 'inbox' && (
+              <FilterChips />
+            )}
+
+            {selectedEmails.length > 0 && (
+              <BulkActions 
+                selectedCount={selectedEmails.length}
+                onArchive={() => {
+                  selectedEmails.forEach(id => archiveEmail(id));
+                  deselectAll();
+                }}
+                onDelete={() => {
+                  selectedEmails.forEach(id => deleteEmail(id));
+                  deselectAll();
+                }}
+                onMarkRead={() => {
+                  selectedEmails.forEach(id => markAsRead(id));
+                  deselectAll();
+                }}
+                onMarkUnread={() => {
+                  selectedEmails.forEach(id => markAsUnread(id));
+                  deselectAll();
+                }}
+              />
+            )}
             
             <div className="mail-list-content">
               {emails.length === 0 ? (
@@ -55,7 +105,18 @@ function MailApp() {
           </div>
           
           <div className="mail-detail-container">
-            <MailDetail email={selectedEmail} onBack={() => setSelectedEmail(null)} />
+            {showThread && getActiveThread() ? (
+              <ThreadView 
+                thread={getActiveThread()} 
+                onBack={handleBackToList}
+              />
+            ) : (
+              <MailDetail 
+                email={selectedEmail} 
+                onBack={handleBackToList}
+                onViewThread={handleOpenThread}
+              />
+            )}
           </div>
         </main>
         
@@ -64,15 +125,22 @@ function MailApp() {
           onClose={() => setRightPanelOpen(false)} 
         />
       </div>
+
+      <ComposeModal 
+        isOpen={composeOpen} 
+        onClose={() => setComposeOpen(false)} 
+      />
     </div>
   );
 }
 
 function App() {
   return (
-    <MailProvider>
-      <MailApp />
-    </MailProvider>
+    <UIProvider>
+      <MailProvider>
+        <MailApp />
+      </MailProvider>
+    </UIProvider>
   );
 }
 

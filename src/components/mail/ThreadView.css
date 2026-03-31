@@ -1,0 +1,107 @@
+.thread-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.thread-view.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  opacity: 0.6;
+}
+
+.thread-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.thread-subject {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 8px;
+}
+
+.thread-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.thread-count {
+  font-size: 13px;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.thread-messages {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.thread-message-wrapper {
+  position: relative;
+}
+
+.thread-timeline {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.timeline-connector {
+  width: 2px;
+  height: 24px;
+  background: var(--border);
+}
+
+.thread-message {
+  border-bottom: 1px solid var(--border);
+}
+
+.thread-message.collapsed-view {
+  padding: 12px 20px;
+  cursor: pointer;
+  background: var(--bg);
+}
+
+.thread-message.collapsed-view:hover {
+  background: var(--code-bg);
+}
+
+.collapsed-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.preview-from {
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.preview-subject {
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.show-earlier-btn {
+  margin: 16px auto;
+  padding: 8px 16px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.show-earlier-btn:hover {
+  background: var(--accent);
+  color: white;
+}

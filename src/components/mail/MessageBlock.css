@@ -1,0 +1,169 @@
+.message-block {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.message-block.expanded {
+  background: var(--bg);
+}
+
+.message-block.collapsed {
+  cursor: pointer;
+}
+
+.message-block.collapsed:hover {
+  background: var(--code-bg);
+}
+
+.message-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.message-meta {
+  flex: 1;
+}
+
+.message-sender {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sender-name {
+  font-weight: 600;
+  color: var(--text-h);
+  font-size: 14px;
+}
+
+.sender-email {
+  font-size: 13px;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.message-time {
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+.message-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  background: var(--code-bg);
+  color: var(--text-h);
+}
+
+.message-recipients {
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.7;
+  margin: 4px 0 8px 48px;
+}
+
+.message-body {
+  margin-left: 48px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-h);
+}
+
+.message-body p {
+  margin: 0 0 12px;
+}
+
+.message-body ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.message-body li {
+  margin-bottom: 4px;
+}
+
+.message-body kbd {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.message-attachments {
+  margin-top: 16px;
+  margin-left: 48px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.attachment-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--code-bg);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.attachment-icon {
+  font-size: 20px;
+}
+
+.attachment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.attachment-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.attachment-size {
+  font-size: 11px;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.quoted-reply {
+  margin-top: 16px;
+  margin-left: 48px;
+  padding: 12px;
+  background: var(--code-bg);
+  border-left: 3px solid var(--border);
+  border-radius: 4px;
+}
+
+.quoted-header {
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.quoted-content {
+  font-size: 13px;
+  color: var(--text);
+  opacity: 0.8;
+}
