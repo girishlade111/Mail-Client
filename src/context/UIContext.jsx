@@ -8,10 +8,15 @@ export function UIProvider({ children }) {
   const [rightPanelTab, setRightPanelTab] = useState('calendar');
   const [composeOpen, setComposeOpen] = useState(false);
   const [composeMaximized, setComposeMaximized] = useState(false);
+  const [composeMinimized, setComposeMinimized] = useState(false);
   const [activeView, setActiveView] = useState('inbox');
   const [density, setDensity] = useState('comfortable');
   const [selectedEmails, setSelectedEmails] = useState([]);
   const [toasts, setToasts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchActive, setSearchActive] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
   const toggleSidebar = useCallback(() => setSidebarOpen(prev => !prev), []);
   const toggleRightPanel = useCallback(() => setRightPanelOpen(prev => !prev), []);

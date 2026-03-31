@@ -1,19 +1,14 @@
 import { Search, Bell, Settings, Menu, Sun, Moon, Plus } from 'lucide-react';
 import { useMail } from '../context/MailContext';
 import { useUI } from '../context/UIContext';
+import { useTheme } from '../context/ThemeContext';
 import { Avatar, Button } from './ui';
 import './Header.css';
 
 export function Header({ onMenuClick }) {
   const { currentUser, searchQuery, setSearchQuery } = useMail();
   const { openCompose } = useUI();
-  const [theme, setTheme] = useState('light');
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-  };
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="header">

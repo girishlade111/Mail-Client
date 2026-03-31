@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MailProvider, useMail } from './context/MailContext';
 import { UIProvider, useUI } from './context/UIContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { RightPanel } from './components/RightPanel';
@@ -10,12 +11,35 @@ import { ThreadView } from './components/mail/ThreadView';
 import { ComposeModal } from './components/compose/ComposeModal';
 import { FilterChips } from './components/mail/FilterChips';
 import { BulkActions } from './components/mail/BulkActions';
+import { CommandPalette } from './components/ui/CommandPalette';
+import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
+import { ToastContainer } from './components/ui/Toast';
 import './App.css';
 
 function MailApp() {
   const { emails, selectedEmail, setSelectedEmail, markAsRead, getActiveThread, currentFolder, setCurrentFolder, toggleStar, deleteEmail, archiveEmail, markAsUnread } = useMail();
-  const { sidebarOpen, setSidebarOpen, rightPanelOpen, setRightPanelOpen, composeOpen, setComposeOpen, selectedEmails, deselectAll } = useUI();
+  const { sidebarOpen, setSidebarOpen, rightPanelOpen, setRightPanelOpen, composeOpen, setComposeOpen, selectedEmails, deselectAll, toasts, removeToast, commandPaletteOpen, setCommandPaletteOpen, shortcutsOpen, setShortcutsOpen } = useUI();
   const [showThread, setShowThread] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(true);
+      }
+      if (e.key === '?' && !e.target.matches('input, textarea')) {
+        e.preventDefault();
+        setShortcutsOpen(true);
+      }
+      if (e.key === 'Escape') {
+        setCommandPaletteOpen(false);
+        setShortcutsOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [setCommandPaletteOpen, setShortcutsOpen]);
 
   const handleEmailSelect = (email) => {
     setSelectedEmail(email);
@@ -130,17 +154,34 @@ function MailApp() {
         isOpen={composeOpen} 
         onClose={() => setComposeOpen(false)} 
       />
+
+      <CommandPalette 
+        open={commandPaletteOpen} 
+        onClose={() => setCommandPaletteOpen(false)} 
+      />
+
+      <KeyboardShortcuts 
+        open={shortcutsOpen} 
+        onClose={() => setShortcutsOpen(false)} 
+      />
+
+      <ToastContainer 
+        toasts={toasts} 
+        onRemove={removeToast} 
+      />
     </div>
   );
 }
 
 function App() {
   return (
-    <UIProvider>
-      <MailProvider>
-        <MailApp />
-      </MailProvider>
-    </UIProvider>
+    <ThemeProvider>
+      <UIProvider>
+        <MailProvider>
+          <MailApp />
+        </MailProvider>
+      </UIProvider>
+    </ThemeProvider>
   );
 }
 
