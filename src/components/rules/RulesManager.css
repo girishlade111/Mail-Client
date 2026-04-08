@@ -1,0 +1,274 @@
+.rules-manager {
+  padding: 20px;
+}
+
+.rules-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.rules-title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.rules-title h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.rules-count {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.create-rule-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.create-rule-btn:hover {
+  background: var(--accent-hover);
+}
+
+.rules-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.rules-empty svg {
+  color: var(--text-tertiary);
+  opacity: 0.5;
+  margin-bottom: 16px;
+}
+
+.rules-empty h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 8px;
+}
+
+.rules-empty p {
+  font-size: 14px;
+  color: var(--text-tertiary);
+  margin: 0 0 20px;
+}
+
+.rules-empty button {
+  padding: 10px 20px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rule-item {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: all 0.15s ease;
+}
+
+.rule-item:hover {
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.rule-item.disabled {
+  opacity: 0.6;
+}
+
+.rule-item.disabled .rule-name,
+.rule-item.disabled .rule-summary {
+  color: var(--text-tertiary);
+}
+
+.rule-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.rule-drag {
+  cursor: grab;
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}
+
+.rule-drag:hover {
+  opacity: 1;
+}
+
+.rule-toggle {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+  display: flex;
+}
+
+.rule-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.rule-info {
+  flex: 1;
+  cursor: pointer;
+}
+
+.rule-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-h);
+  margin-bottom: 4px;
+}
+
+.rule-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.rule-conditions,
+.rule-actions {
+  display: flex;
+  align-items: center;
+}
+
+.rule-match-count {
+  font-size: 12px;
+  color: var(--accent);
+  background: var(--accent-subtle);
+  padding: 4px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.rule-menu {
+  position: relative;
+}
+
+.rule-menu-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+  display: flex;
+}
+
+.rule-menu-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+
+.rule-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  min-width: 160px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+}
+
+.rule-dropdown button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.rule-dropdown button:hover {
+  background: var(--bg-hover);
+}
+
+.rule-dropdown button.danger {
+  color: var(--danger);
+}
+
+.rule-dropdown button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rule-expanded {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 24px;
+}
+
+.rule-conditions-detail h5,
+.rule-actions-detail h5 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+.condition-item,
+.action-item {
+  font-size: 13px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+
+.not-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--danger);
+  background: var(--danger-subtle);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-right: 8px;
+}

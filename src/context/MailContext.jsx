@@ -68,6 +68,64 @@ export function MailProvider({ children }) {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
 
+  const [rules, setRules] = useState([
+    {
+      id: 'rule-1',
+      name: 'Label invoices',
+      enabled: true,
+      priority: 1,
+      matchAll: false,
+      conditions: [{ field: 'subject', operator: 'contains', value: 'invoice', not: false }],
+      actions: [{ type: 'label', value: 'finance' }],
+      createdAt: '2026-04-01',
+      lastUsed: null,
+    },
+    {
+      id: 'rule-2',
+      name: 'Move newsletters to Promotions',
+      enabled: true,
+      priority: 2,
+      matchAll: false,
+      conditions: [{ field: 'subject', operator: 'contains', value: 'newsletter', not: false }],
+      actions: [{ type: 'category', value: 'promotions' }],
+      createdAt: '2026-04-01',
+      lastUsed: null,
+    },
+    {
+      id: 'rule-3',
+      name: 'Flag client emails',
+      enabled: false,
+      priority: 3,
+      matchAll: false,
+      conditions: [{ field: 'from', operator: 'contains', value: 'client', not: false }],
+      actions: [{ type: 'flag', value: 'follow-up' }],
+      createdAt: '2026-04-01',
+      lastUsed: null,
+    },
+    {
+      id: 'rule-4',
+      name: 'Auto-archive notifications',
+      enabled: true,
+      priority: 4,
+      matchAll: false,
+      conditions: [{ field: 'subject', operator: 'contains', value: 'notification', not: false }],
+      actions: [{ type: 'archive', value: '' }],
+      createdAt: '2026-04-01',
+      lastUsed: null,
+    },
+    {
+      id: 'rule-5',
+      name: 'Important from CEO',
+      enabled: true,
+      priority: 5,
+      matchAll: false,
+      conditions: [{ field: 'from', operator: 'contains', value: 'ceo@', not: false }],
+      actions: [{ type: 'markImportant', value: '' }],
+      createdAt: '2026-04-01',
+      lastUsed: null,
+    },
+  ]);
+
   const threads = useMemo(() => {
     const threadMap = {};
     emails.forEach(email => {
@@ -256,6 +314,159 @@ export function MailProvider({ children }) {
         return [];
     }
   }, [emails]);
+
+  const checkCondition = useCallback((email, condition) => {
+    const { field, operator, value, not } = condition;
+    let matches = false;
+    const lowerValue = value.toLowerCase();
+
+    switch (field) {
+      case 'from':
+        if (operator === 'contains') {
+          matches = email.from.name.toLowerCase().includes(lowerValue) || 
+                    email.from.email.toLowerCase().includes(lowerValue);
+        } else if (operator === 'equals') {
+          matches = email.from.name.toLowerCase() === lowerValue || 
+                    email.from.email.toLowerCase() === lowerValue;
+        }
+        break;
+      case 'to':
+        if (operator === 'contains') {
+          matches = email.to.some(t => t.name.toLowerCase().includes(lowerValue) || 
+                                    t.email.toLowerCase().includes(lowerValue));
+        } else if (operator === 'equals') {
+          matches = email.to.some(t => t.name.toLowerCase() === lowerValue || 
+                                  t.email.toLowerCase() === lowerValue);
+        }
+        break;
+      case 'subject':
+        if (operator === 'contains') {
+          matches = email.subject.toLowerCase().includes(lowerValue);
+        } else if (operator === 'equals') {
+          matches = email.subject.toLowerCase() === lowerValue;
+        }
+        break;
+      case 'body':
+        if (operator === 'contains') {
+          const plainBody = email.body.replace(/<[^>]*>/g, '').toLowerCase();
+          matches = plainBody.includes(lowerValue);
+        }
+        break;
+      case 'hasAttachment':
+        matches = (email.attachments && email.attachments.length > 0);
+        if (value === 'false') matches = !matches;
+        break;
+      case 'size':
+        const sizeMB = (email.attachments || []).reduce((acc, att) => acc + (att.size || 0), 0) / (1024 * 1024);
+        if (operator === 'greaterThan') matches = sizeMB > parseFloat(value);
+        else if (operator === 'lessThan') matches = sizeMB < parseFloat(value);
+        break;
+      case 'read':
+        matches = email.read === (value === 'true');
+        break;
+      case 'starred':
+        matches = email.starred === (value === 'true');
+        break;
+      case 'priority':
+        matches = email.priority === value;
+        break;
+      case 'category':
+        matches = email.category === value;
+        break;
+      case 'label':
+        matches = email.labels.includes(value);
+        break;
+      case 'senderDomain':
+        const domain = email.from.email.split('@')[1]?.toLowerCase() || '';
+        matches = domain.includes(lowerValue);
+        break;
+      default:
+        matches = false;
+    }
+
+    return not ? !matches : matches;
+  }, []);
+
+  const applyRuleToEmail = useCallback((email, rule) => {
+    const { conditions, matchAll, actions } = rule;
+    
+    const conditionsMatch = matchAll 
+      ? conditions.every(c => checkCondition(email, c))
+      : conditions.some(c => checkCondition(email, c));
+
+    if (!conditionsMatch) return null;
+
+    return actions;
+  }, [checkCondition]);
+
+  const applyAllRules = useCallback((email) => {
+    const enabledRules = rules.filter(r => r.enabled).sort((a, b) => a.priority - b.priority);
+    
+    for (const rule of enabledRules) {
+      const actions = applyRuleToEmail(email, rule);
+      if (actions) {
+        return { rule, actions };
+      }
+    }
+    return null;
+  }, [rules, applyRuleToEmail]);
+
+  const getMatchingEmailsForRule = useCallback((ruleId) => {
+    const rule = rules.find(r => r.id === ruleId);
+    if (!rule) return [];
+    
+    return emails.filter(email => {
+      const result = applyRuleToEmail(email, rule);
+      return result !== null;
+    });
+  }, [rules, emails, applyRuleToEmail]);
+
+  const createRule = useCallback((rule) => {
+    const newRule = {
+      ...rule,
+      id: `rule-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      lastUsed: null,
+    };
+    setRules(prev => [...prev, newRule]);
+    return newRule;
+  }, []);
+
+  const updateRule = useCallback((ruleId, updates) => {
+    setRules(prev => prev.map(r => r.id === ruleId ? { ...r, ...updates } : r));
+  }, []);
+
+  const deleteRule = useCallback((ruleId) => {
+    setRules(prev => prev.filter(r => r.id !== ruleId));
+  }, []);
+
+  const toggleRule = useCallback((ruleId) => {
+    setRules(prev => prev.map(r => r.id === ruleId ? { ...r, enabled: !r.enabled } : r));
+  }, []);
+
+  const duplicateRule = useCallback((ruleId) => {
+    const rule = rules.find(r => r.id === ruleId);
+    if (!rule) return;
+    
+    const newRule = {
+      ...rule,
+      id: `rule-${Date.now()}`,
+      name: `${rule.name} (copy)`,
+      priority: rules.length + 1,
+      createdAt: new Date().toISOString(),
+      lastUsed: null,
+    };
+    setRules(prev => [...prev, newRule]);
+  }, [rules]);
+
+  const reorderRules = useCallback((fromIndex, toIndex) => {
+    setRules(prev => {
+      const newRules = [...prev];
+      const [removed] = newRules.splice(fromIndex, 1);
+      newRules.splice(toIndex, 0, removed);
+      return newRules.map((r, i) => ({ ...r, priority: i + 1 }));
+    });
+  }, []);
 
   const addToHistory = useCallback((query) => {
     if (!query.trim()) return;
@@ -622,6 +833,14 @@ export function MailProvider({ children }) {
     applySearch,
     clearSearch,
     performSearch,
+    applyAllRules,
+    getMatchingEmailsForRule,
+    createRule,
+    updateRule,
+    deleteRule,
+    toggleRule,
+    duplicateRule,
+    reorderRules,
   };
 
   return <MailContext.Provider value={value}>{children}</MailContext.Provider>;

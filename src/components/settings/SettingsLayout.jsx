@@ -3,6 +3,7 @@ import { Settings, User, Bell, Palette, Shield, HardDrive, Key, Mail, Filter, Ta
 import { Switch } from '../ui';
 import { LabelsManager } from '../labels/LabelsManager';
 import { CategoryManager } from '../mail/FilterChips';
+import { RulesManager } from '../rules/RulesManager';
 import './Settings.css';
 
 const settingsTabs = [
@@ -87,7 +88,12 @@ export function SettingsSignatures() {
 }
 
 export function SettingsFilters() {
-  return <div className="settings-section"><h3>Filters</h3></div>;
+  return (
+    <div className="settings-section">
+      <h3>Filters & Rules</h3>
+      <RulesManager />
+    </div>
+  );
 }
 
 export function SettingsNotifications() {

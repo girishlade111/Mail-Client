@@ -1,0 +1,196 @@
+.rule-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.builder-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.builder-section label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.builder-section input,
+.builder-section select {
+  padding: 10px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  color: var(--text);
+}
+
+.builder-section input:focus,
+.builder-section select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.match-toggle {
+  padding: 6px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+.match-toggle.all {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.empty-conditions,
+.empty-actions {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.condition-row,
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.condition-logic {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 0 8px;
+}
+
+.condition-row select,
+.condition-row input,
+.action-row select {
+  flex: 1;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.size-input {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.size-input input {
+  width: 80px;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+}
+
+.remove-btn:hover {
+  background: var(--danger-subtle);
+  color: var(--danger);
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: none;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.action-no-value {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+.rule-preview-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.rule-preview-banner strong {
+  font-weight: 600;
+}
+
+.builder-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.builder-actions .cancel-btn {
+  padding: 10px 20px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.builder-actions .cancel-btn:hover {
+  background: var(--bg-hover);
+}
+
+.builder-actions .save-btn {
+  padding: 10px 20px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.builder-actions .save-btn:hover {
+  background: var(--accent-hover);
+}
