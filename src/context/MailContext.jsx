@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { emails as initialEmails, labels, contacts, tasks, calendarEvents, currentUser, accounts } from '../data/mock';
+import { emails as initialEmails, labels as initialLabels, contacts, tasks, calendarEvents, currentUser, accounts } from '../data/mock';
 
 const MailContext = createContext(null);
 
@@ -27,6 +27,22 @@ const initialSearchState = {
   account: '',
 };
 
+const defaultCategories = [
+  { id: 'primary', name: 'Primary', visible: true, focused: true, order: 0 },
+  { id: 'social', name: 'Social', visible: true, focused: false, order: 1 },
+  { id: 'updates', name: 'Updates', visible: true, focused: false, order: 2 },
+  { id: 'promotions', name: 'Promotions', visible: true, focused: false, order: 3 },
+  { id: 'forums', name: 'Forums', visible: true, focused: false, order: 4 },
+  { id: 'team', name: 'Team', visible: true, focused: true, order: 5 },
+];
+
+const enhancedLabels = initialLabels.map((label, index) => ({
+  ...label,
+  parentId: null,
+  visible: true,
+  order: index,
+}));
+
 export function MailProvider({ children }) {
   const [emails, setEmails] = useState(initialEmails);
   const [selectedEmail, setSelectedEmail] = useState(null);
@@ -37,6 +53,10 @@ export function MailProvider({ children }) {
   const [conversationView, setConversationView] = useState(true);
   const [density, setDensity] = useState('comfortable');
   const [isLoading, setIsLoading] = useState(false);
+  
+  const [labels, setLabels] = useState(enhancedLabels);
+  const [categories, setCategories] = useState(defaultCategories);
+  const [focusedInboxEnabled, setFocusedInboxEnabled] = useState(true);
   
   const [searchState, setSearchState] = useState(initialSearchState);
   const [searchHistory, setSearchHistory] = useState([
@@ -389,6 +409,123 @@ export function MailProvider({ children }) {
     );
   }, []);
 
+  const addLabelToEmail = useCallback((emailId, labelId) => {
+    setEmails(prev =>
+      prev.map(email => 
+        email.id === emailId && !email.labels.includes(labelId)
+          ? { ...email, labels: [...email.labels, labelId] } 
+          : email
+      )
+    );
+  }, []);
+
+  const removeLabelFromEmail = useCallback((emailId, labelId) => {
+    setEmails(prev =>
+      prev.map(email => 
+        email.id === emailId 
+          ? { ...email, labels: email.labels.filter(l => l !== labelId) } 
+          : email
+      )
+    );
+  }, []);
+
+  const addLabelToMultiple = useCallback((emailIds, labelId) => {
+    setEmails(prev =>
+      prev.map(email => 
+        emailIds.includes(email.id) && !email.labels.includes(labelId)
+          ? { ...email, labels: [...email.labels, labelId] } 
+          : email
+      )
+    );
+  }, []);
+
+  const removeLabelFromMultiple = useCallback((emailIds, labelId) => {
+    setEmails(prev =>
+      prev.map(email => 
+        emailIds.includes(email.id)
+          ? { ...email, labels: email.labels.filter(l => l !== labelId) } 
+          : email
+      )
+    );
+  }, []);
+
+  const createLabel = useCallback((name, color, parentId = null) => {
+    const newLabel = {
+      id: `label-${Date.now()}`,
+      name,
+      color,
+      parentId,
+      visible: true,
+      order: labels.length,
+      emailCount: 0,
+    };
+    setLabels(prev => [...prev, newLabel]);
+    return newLabel;
+  }, [labels.length]);
+
+  const updateLabel = useCallback((labelId, updates) => {
+    setLabels(prev =>
+      prev.map(label => 
+        label.id === labelId 
+          ? { ...label, ...updates } 
+          : label
+      )
+    );
+  }, []);
+
+  const deleteLabel = useCallback((labelId) => {
+    setLabels(prev => prev.filter(label => label.id !== labelId));
+    setEmails(prev =>
+      prev.map(email => 
+        email.labels.includes(labelId)
+          ? { ...email, labels: email.labels.filter(l => l !== labelId) } 
+          : email
+      )
+    );
+  }, []);
+
+  const toggleLabelVisibility = useCallback((labelId) => {
+    setLabels(prev =>
+      prev.map(label => 
+        label.id === labelId 
+          ? { ...label, visible: !label.visible } 
+          : label
+      )
+    );
+  }, []);
+
+  const reorderLabels = useCallback((fromIndex, toIndex) => {
+    setLabels(prev => {
+      const newLabels = [...prev];
+      const [removed] = newLabels.splice(fromIndex, 1);
+      newLabels.splice(toIndex, 0, removed);
+      return newLabels.map((label, index) => ({ ...label, order: index }));
+    });
+  }, []);
+
+  const updateCategory = useCallback((categoryId, updates) => {
+    setCategories(prev =>
+      prev.map(cat => 
+        cat.id === categoryId 
+          ? { ...cat, ...updates } 
+          : cat
+      )
+    );
+  }, []);
+
+  const reorderCategories = useCallback((fromIndex, toIndex) => {
+    setCategories(prev => {
+      const newCategories = [...prev];
+      const [removed] = newCategories.splice(fromIndex, 1);
+      newCategories.splice(toIndex, 0, removed);
+      return newCategories.map((cat, index) => ({ ...cat, order: index }));
+    });
+  }, []);
+
+  const toggleFocusedInbox = useCallback(() => {
+    setFocusedInboxEnabled(prev => !prev);
+  }, []);
+
   const sendEmail = useCallback((email) => {
     const newEmail = {
       ...email,
@@ -422,6 +559,8 @@ export function MailProvider({ children }) {
     currentFolder,
     setCurrentFolder,
     labels,
+    categories,
+    focusedInboxEnabled,
     contacts,
     tasks,
     calendarEvents,
@@ -453,6 +592,18 @@ export function MailProvider({ children }) {
     markAllAsRead,
     addLabel,
     removeLabel,
+    addLabelToEmail,
+    removeLabelFromEmail,
+    addLabelToMultiple,
+    removeLabelFromMultiple,
+    createLabel,
+    updateLabel,
+    deleteLabel,
+    toggleLabelVisibility,
+    reorderLabels,
+    updateCategory,
+    reorderCategories,
+    toggleFocusedInbox,
     sendEmail,
     searchState,
     setSearchState,

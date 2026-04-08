@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { Star, Paperclip, Archive, Trash2, Clock, MailOpen, Mail, Flag, MoreHorizontal, Check } from 'lucide-react';
+import { Star, Paperclip, Archive, Trash2, Clock, MailOpen, Mail, Flag, MoreHorizontal, Check, Tag } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar } from './ui';
 import { useUI } from '../context/UIContext';
@@ -9,7 +9,7 @@ import './MailRow.css';
 export function MailRow({ email, isSelected, onClick, isChecked, onCheckChange }) {
   const [showActions, setShowActions] = useState(false);
   const { addToast } = useUI();
-  const { toggleStar, markAsRead, markAsUnread, archiveEmail, deleteEmail, setEmails } = useMail();
+  const { toggleStar, markAsRead, markAsUnread, archiveEmail, deleteEmail, labels } = useMail();
   
   const formatDate = (date) => {
     const now = new Date();
@@ -33,17 +33,13 @@ export function MailRow({ email, isSelected, onClick, isChecked, onCheckChange }
   };
 
   const getLabelColor = (labelId) => {
-    const labelColors = {
-      work: '#4361ee',
-      personal: '#8b5cf6',
-      finance: '#22c55e',
-      clients: '#f59e0b',
-      team: '#3b82f6',
-      product: '#ec4899',
-      marketing: '#06b6d4',
-      urgent: '#ef4444',
-    };
-    return labelColors[labelId] || '#6b7280';
+    const label = labels.find(l => l.id === labelId);
+    return label?.color || '#6b7280';
+  };
+
+  const getLabelName = (labelId) => {
+    const label = labels.find(l => l.id === labelId);
+    return label?.name || labelId;
   };
 
   const handleAction = (e, action) => {
@@ -119,12 +115,12 @@ export function MailRow({ email, isSelected, onClick, isChecked, onCheckChange }
             <span className="mail-from">{email.from.name}</span>
             {email.labels.length > 0 && (
               <div className="mail-labels-inline">
-                {email.labels.slice(0, 2).map((label) => (
+                {email.labels.slice(0, 2).map((labelId) => (
                   <span 
-                    key={label} 
+                    key={labelId} 
                     className="label-dot-small"
-                    style={{ backgroundColor: getLabelColor(label) }}
-                    title={label}
+                    style={{ backgroundColor: getLabelColor(labelId) }}
+                    title={getLabelName(labelId)}
                   />
                 ))}
                 {email.labels.length > 2 && (
@@ -152,13 +148,15 @@ export function MailRow({ email, isSelected, onClick, isChecked, onCheckChange }
         <div className="mail-row-meta">
           {email.labels.length > 0 && (
             <div className="mail-labels">
-              {email.labels.slice(0, 3).map((label) => (
+              {email.labels.slice(0, 3).map((labelId) => (
                 <span 
-                  key={label} 
-                  className={`mail-label mail-label-${label}`}
-                  style={{ '--label-color': getLabelColor(label) }}
+                  key={labelId} 
+                  className="mail-label"
+                  style={{ '--label-color': getLabelColor(labelId) }}
+                  title={getLabelName(labelId)}
                 >
-                  {label}
+                  <Tag size={10} />
+                  {getLabelName(labelId)}
                 </span>
               ))}
             </div>

@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Settings, User, Bell, Palette, Shield, HardDrive, Key, Mail, Filter, Tag, Link2, Zap, Languages, Calendar, Moon, Sun, Edit, Clock, Inbox } from 'lucide-react';
+import { Settings, User, Bell, Palette, Shield, HardDrive, Key, Mail, Filter, Tag, Link2, Zap, Languages, Calendar, Moon, Sun, Edit, Clock, Inbox, FolderOpen } from 'lucide-react';
 import { Switch } from '../ui';
+import { LabelsManager } from '../labels/LabelsManager';
+import { CategoryManager } from '../mail/FilterChips';
 import './Settings.css';
 
 const settingsTabs = [
@@ -11,6 +13,7 @@ const settingsTabs = [
   { id: 'signatures', label: 'Signatures', icon: Edit },
   { id: 'filters', label: 'Filters', icon: Filter },
   { id: 'labels', label: 'Labels', icon: Tag },
+  { id: 'organization', label: 'Organization', icon: FolderOpen },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'shortcuts', label: 'Shortcuts', icon: Clock },
   { id: 'privacy', label: 'Privacy', icon: Shield },
@@ -93,4 +96,41 @@ export function SettingsNotifications() {
 
 export function SettingsShortcuts() {
   return <div className="settings-section"><h3>Keyboard Shortcuts</h3></div>;
+}
+
+export function SettingsLabels() {
+  return (
+    <div className="settings-section">
+      <h3>Labels</h3>
+      <LabelsManager />
+    </div>
+  );
+}
+
+export function SettingsOrganization() {
+  const [activeTab, setActiveTab] = useState('labels');
+  
+  return (
+    <div className="settings-section">
+      <h3>Organization</h3>
+      <div className="org-tabs">
+        <button 
+          className={`org-tab ${activeTab === 'labels' ? 'active' : ''}`}
+          onClick={() => setActiveTab('labels')}
+        >
+          <Tag size={16} /> Labels
+        </button>
+        <button 
+          className={`org-tab ${activeTab === 'categories' ? 'active' : ''}`}
+          onClick={() => setActiveTab('categories')}
+        >
+          <Inbox size={16} /> Categories
+        </button>
+      </div>
+      <div className="org-content">
+        {activeTab === 'labels' && <LabelsManager />}
+        {activeTab === 'categories' && <CategoryManager />}
+      </div>
+    </div>
+  );
 }

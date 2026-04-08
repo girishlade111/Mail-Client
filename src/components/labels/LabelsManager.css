@@ -40,17 +40,69 @@
   gap: 4px;
 }
 
+.labels-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+}
+
+.labels-empty svg {
+  opacity: 0.5;
+  margin-bottom: 12px;
+}
+
+.labels-empty p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.labels-empty span {
+  font-size: 13px;
+}
+
 .label-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
+  gap: 8px;
+  padding: 8px 12px;
   border-radius: var(--radius-md);
   transition: background var(--transition-fast);
 }
 
 .label-item:hover {
   background: var(--bg-hover);
+}
+
+.label-item-child {
+  margin-left: 24px;
+}
+
+.label-drag {
+  cursor: grab;
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}
+
+.label-drag:hover {
+  opacity: 1;
+}
+
+.label-expand {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  display: flex;
+}
+
+.label-expand-spacer {
+  width: 22px;
 }
 
 .label-color {
@@ -60,15 +112,29 @@
   flex-shrink: 0;
 }
 
+.label-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .label-name {
   flex: 1;
   font-size: 14px;
   color: var(--text-h);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .label-count {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-tertiary);
+  background: var(--bg-secondary);
+  padding: 2px 8px;
+  border-radius: 10px;
 }
 
 .label-actions {
@@ -89,11 +155,23 @@
   cursor: pointer;
   color: var(--text-tertiary);
   border-radius: var(--radius-sm);
+  display: flex;
 }
 
 .label-actions button:hover {
   background: var(--bg-active);
   color: var(--text);
+}
+
+.label-actions .delete-action:hover {
+  color: var(--danger);
+}
+
+.label-children {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .label-editor {
@@ -110,7 +188,8 @@
   margin-bottom: 8px;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 10px 12px;
   background: var(--bg-secondary);
@@ -120,7 +199,8 @@
   color: var(--text);
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
   border-color: var(--accent);
 }
@@ -183,4 +263,35 @@
 
 .save-btn:hover {
   background: var(--accent-hover);
+}
+
+.delete-confirm {
+  text-align: center;
+}
+
+.delete-confirm p {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.delete-confirm span {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.delete-btn-confirm {
+  padding: 8px 16px;
+  background: var(--danger);
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.delete-btn-confirm:hover {
+  background: #dc2626;
 }

@@ -218,13 +218,19 @@
 }
 
 .mail-label {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 12px;
-  text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
   background: color-mix(in srgb, var(--label-color) 15%, transparent);
   color: var(--label-color);
   font-weight: 500;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mail-row-actions {

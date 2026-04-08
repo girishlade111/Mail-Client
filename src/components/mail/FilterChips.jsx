@@ -1,5 +1,6 @@
 import { useMail } from '../../context/MailContext';
 import { useUI } from '../../context/UIContext';
+import { Eye, EyeOff, Star, Zap, Settings } from 'lucide-react';
 import './FilterChips.css';
 
 const categories = [
@@ -13,7 +14,7 @@ const categories = [
 ];
 
 export function FilterChips() {
-  const { activeCategory, setActiveCategory, allEmails } = useMail();
+  const { activeCategory, setActiveCategory, allEmails, categories: ctxCategories, focusedInboxEnabled, toggleFocusedInbox, updateCategory } = useMail();
   const { addToast } = useUI();
 
   const getCategoryCount = (categoryId) => {
@@ -25,30 +26,159 @@ export function FilterChips() {
     ).length;
   };
 
+  const getUnreadCount = (categoryId) => {
+    if (categoryId === 'all') {
+      return allEmails.filter(email => email.folder === 'inbox' && !email.read).length;
+    }
+    return allEmails.filter(email => 
+      email.folder === 'inbox' && email.category === categoryId && !email.read
+    ).length;
+  };
+
+  const visibleCategories = ctxCategories.filter(c => c.visible).sort((a, b) => a.order - b.order);
+
   return (
     <div className="filter-chips">
-      {categories.map((category) => {
+      {focusedInboxEnabled && (
+        <button
+          className="filter-chip focused-toggle"
+          onClick={toggleFocusedInbox}
+          title="Toggle Focused inbox"
+        >
+          <Zap size={14} />
+          Focused
+        </button>
+      )}
+      
+      <button
+        key="all"
+        className={`filter-chip ${activeCategory === null ? 'active' : ''}`}
+        onClick={() => {
+          setActiveCategory(null);
+          addToast('Showing all messages');
+        }}
+      >
+        <span className="chip-name">All</span>
+        <span className="chip-count">{getCategoryCount('all')}</span>
+        {getUnreadCount('all') > 0 && (
+          <span className="chip-unread">{getUnreadCount('all')}</span>
+        )}
+      </button>
+      
+      {visibleCategories.map((category) => {
         const count = getCategoryCount(category.id);
+        const unread = getUnreadCount(category.id);
+        const isActive = activeCategory === category.id;
+        
         return (
           <button
             key={category.id}
-            className={`filter-chip ${activeCategory === category.id ? 'active' : ''}`}
+            className={`filter-chip ${isActive ? 'active' : ''}`}
             onClick={() => {
-              setActiveCategory(category.id === 'all' ? null : category.id);
-              if (category.id === 'all') {
+              setActiveCategory(category.id === activeCategory ? null : category.id);
+              if (isActive) {
                 addToast('Showing all messages');
               } else {
                 addToast(`Filtered by ${category.name}`);
               }
             }}
+            title={category.name}
           >
+            {category.focused && (
+              <Star size={10} className="chip-star" fill="#eab308" />
+            )}
             <span className="chip-name">{category.name}</span>
             {count > 0 && <span className="chip-count">{count}</span>}
+            {unread > 0 && (
+              <span className="chip-unread">{unread}</span>
+            )}
           </button>
         );
       })}
     </div>
   );
+}
+
+export function CategoryManager() {
+  const { categories, updateCategory, toggleFocusedInbox, focusedInboxEnabled } = useMail();
+  const { addToast } = useUI();
+
+  const sortedCategories = [...categories].sort((a, b) => a.order - b.order);
+
+  const handleToggleVisibility = (categoryId) => {
+    const cat = categories.find(c => c.id === categoryId);
+    if (cat) {
+      updateCategory(categoryId, { visible: !cat.visible });
+      addToast(`${cat.name} ${cat.visible ? 'hidden' : 'shown'}`);
+    }
+  };
+
+  const handleToggleFocused = (categoryId) => {
+    const cat = categories.find(c => c.id === categoryId);
+    if (cat) {
+      updateCategory(categoryId, { focused: !cat.focused });
+      addToast(`${cat.name} ${cat.focused ? 'removed from' : 'added to'} Focused`);
+    }
+  };
+
+  return (
+    <div className="category-manager">
+      <div className="category-header">
+        <h3>Categories</h3>
+        <div className="category-options">
+          <label className="focused-toggle">
+            <input 
+              type="checkbox" 
+              checked={focusedInboxEnabled}
+              onChange={toggleFocusedInbox}
+            />
+            <Zap size={14} />
+            Focused inbox
+          </label>
+        </div>
+      </div>
+
+      <div className="category-list">
+        {sortedCategories.map(category => (
+          <div key={category.id} className="category-item">
+            <div className="category-color" style={{ backgroundColor: getCategoryColor(category.id) }} />
+            
+            <div className="category-info">
+              <span className="category-name">{category.name}</span>
+              <div className="category-toggles">
+                <button 
+                  className={`cat-toggle ${category.focused ? 'active' : ''}`}
+                  onClick={() => handleToggleFocused(category.id)}
+                  title={category.focused ? 'Remove from Focused' : 'Add to Focused'}
+                >
+                  <Star size={12} fill={category.focused ? '#eab308' : 'none'} />
+                </button>
+                <button 
+                  className={`cat-toggle ${category.visible ? '' : 'hidden'}`}
+                  onClick={() => handleToggleVisibility(category.id)}
+                  title={category.visible ? 'Hide' : 'Show'}
+                >
+                  {category.visible ? <Eye size={12} /> : <EyeOff size={12} />}
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function getCategoryColor(categoryId) {
+  const colors = {
+    primary: '#4361ee',
+    social: '#8b5cf6',
+    updates: '#22c55e',
+    promotions: '#f59e0b',
+    forums: '#06b6d4',
+    team: '#ec4899',
+  };
+  return colors[categoryId] || '#6b7280';
 }
 
 export function EmptyInbox({ category }) {
