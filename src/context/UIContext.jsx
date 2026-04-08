@@ -16,6 +16,9 @@ export function UIProvider({ children }) {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [currentView, setCurrentView] = useState('main');
   const [settingsTab, setSettingsTab] = useState('general');
+  const [drafts, setDrafts] = useState([]);
+  const [activeDraftId, setActiveDraftId] = useState(null);
+  const [composeMinimized, setComposeMinimized] = useState(false);
 
   const toggleSidebar = useCallback(() => setSidebarOpen(prev => !prev), []);
   const toggleRightPanel = useCallback(() => setRightPanelOpen(prev => !prev), []);
@@ -104,6 +107,12 @@ export function UIProvider({ children }) {
     goToContacts,
     goToSearch,
     goToMain,
+    drafts,
+    setDrafts,
+    activeDraftId,
+    setActiveDraftId,
+    composeMinimized,
+    setComposeMinimized,
   };
 
   return <UIContext.Provider value={value}>{children}</UIContext.Provider>;
