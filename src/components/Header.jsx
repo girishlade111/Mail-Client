@@ -7,7 +7,7 @@ import { Avatar, Button } from './ui';
 import './Header.css';
 
 export function Header({ onMenuClick }) {
-  const { currentUser, searchQuery, setSearchQuery, accounts } = useMail();
+  const { currentUser, searchQuery, setSearchQuery } = useMail();
   const { openCompose, goToSettings } = useUI();
   const { theme, toggleTheme } = useTheme();
   const [showAccountMenu, setShowAccountMenu] = useState(false);

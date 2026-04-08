@@ -4,7 +4,7 @@ import { Star, MoreHorizontal, Reply, Forward } from 'lucide-react';
 import { Avatar } from '../ui';
 import './MessageBlock.css';
 
-export function MessageBlock({ message, isExpanded = true, onToggle }) {
+export function MessageBlock({ message, isExpanded = true }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (

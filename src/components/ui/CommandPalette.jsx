@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, Inbox, Send, Star, Settings, User, Mail, Archive, Trash2, Moon, Sun } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
-import { useUI } from '../../context/UIContext';
+import { Search, Inbox, Send, Star, Settings, User, Mail, Archive, Trash2, Moon } from 'lucide-react';
 import './CommandPalette.css';
 
 const commands = [
@@ -16,12 +14,10 @@ const commands = [
   { id: 'theme', label: 'Toggle theme', category: 'Settings', icon: Moon, action: 'theme' },
 ];
 
-export function CommandPalette({ open, onClose }) {
+export function CommandPalette({ open, onClose, onNavigate, onCompose, onToggleTheme }) {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
-  const { theme, toggleTheme } = { theme: 'light', toggleTheme: () => {} };
-  const { setActiveView, setComposeOpen } = { setActiveView: () => {}, setComposeOpen: () => {} };
 
   const filteredCommands = query
     ? commands.filter(cmd => 
@@ -62,11 +58,11 @@ export function CommandPalette({ open, onClose }) {
 
   const executeCommand = (cmd) => {
     if (cmd.id === 'theme') {
-      toggleTheme();
+      onToggleTheme?.();
     } else if (cmd.id === 'compose') {
-      setComposeOpen(true);
+      onCompose?.();
     } else {
-      setActiveView(cmd.id);
+      onNavigate?.(cmd.id);
     }
     onClose();
   };

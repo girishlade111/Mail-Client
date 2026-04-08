@@ -15,7 +15,7 @@ import { CommandPalette } from './components/ui/CommandPalette';
 import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { ToastContainer } from './components/ui/Toast';
 import { SettingsLayout, SettingsGeneral, SettingsAppearance, SettingsInbox, SettingsAccounts, SettingsSignatures, SettingsFilters, SettingsNotifications, SettingsShortcuts } from './components/settings/SettingsLayout';
-import { Search, Star, Archive, Trash2, Mail, Users, Circle, CheckCircle } from 'lucide-react';
+import { Search, Star, Users, Circle } from 'lucide-react';
 import './App.css';
 
 function ContactsView({ onBack }) {
@@ -88,9 +88,7 @@ function ContactsView({ onBack }) {
 
 function SearchView({ onBack }) {
   const { emails, searchQuery } = useMail();
-  const { searchActive, setSearchActive } = useUI();
   const [searchType, setSearchType] = useState('all');
-  const [dateRange, setDateRange] = useState('any');
 
   const searchResults = emails.filter(email => 
     searchQuery && (
@@ -149,8 +147,9 @@ function SearchView({ onBack }) {
 }
 
 function MailApp() {
-  const { emails, selectedEmail, setSelectedEmail, markAsRead, getActiveThread, currentFolder, setCurrentFolder, toggleStar, deleteEmail, archiveEmail, markAsUnread } = useMail();
+  const { emails, selectedEmail, setSelectedEmail, markAsRead, getActiveThread, currentFolder, setCurrentFolder, deleteEmail, archiveEmail, markAsUnread } = useMail();
   const { sidebarOpen, setSidebarOpen, rightPanelOpen, setRightPanelOpen, composeOpen, setComposeOpen, selectedEmails, deselectAll, toasts, removeToast, commandPaletteOpen, setCommandPaletteOpen, shortcutsOpen, setShortcutsOpen, currentView, setCurrentView, settingsTab, setSettingsTab, goToMain } = useUI();
+  const { toggleTheme } = useTheme();
   const [showThread, setShowThread] = useState(false);
 
   useEffect(() => {
@@ -282,7 +281,6 @@ function MailApp() {
               {showThread && getActiveThread() ? (
                 <ThreadView 
                   thread={getActiveThread()} 
-                  onBack={handleBackToList}
                 />
               ) : (
                 <MailDetail 
@@ -325,7 +323,20 @@ function MailApp() {
 
       <CommandPalette 
         open={commandPaletteOpen} 
-        onClose={() => setCommandPaletteOpen(false)} 
+        onClose={() => setCommandPaletteOpen(false)}
+        onNavigate={(view) => {
+          if (view === 'inbox' || view === 'sent' || view === 'starred' || view === 'archive' || view === 'trash') {
+            setCurrentFolder(view);
+          } else if (view === 'compose') {
+            setComposeOpen(true);
+          } else if (view === 'contacts') {
+            setCurrentView('contacts');
+          } else if (view === 'settings') {
+            setCurrentView('settings');
+          }
+        }}
+        onCompose={() => setComposeOpen(true)}
+        onToggleTheme={toggleTheme}
       />
 
       <KeyboardShortcuts 

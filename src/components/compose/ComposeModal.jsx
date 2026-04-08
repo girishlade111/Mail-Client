@@ -4,7 +4,7 @@ import { Button } from '../ui';
 import { Avatar } from '../ui';
 import './ComposeModal.css';
 
-export function ComposeModal({ isOpen, onClose, initialData }) {
+export function ComposeModal({ isOpen, onClose }) {
   const [to, setTo] = useState('');
   const [cc, setCc] = useState('');
   const [bcc, setBcc] = useState('');
@@ -19,7 +19,7 @@ export function ComposeModal({ isOpen, onClose, initialData }) {
   const [isSending, setIsSending] = useState(false);
   const [attachments, setAttachments] = useState([]);
 
-  const handleSend = (scheduledTime) => {
+  const handleSend = () => {
     if (!to || !subject) return;
     setIsSending(true);
     setTimeout(() => {

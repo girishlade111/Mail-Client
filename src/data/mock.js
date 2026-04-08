@@ -368,3 +368,123 @@ export const currentUser = {
   email: 'alex@flowmail.com',
   avatar: null,
 };
+
+export const preferences = {
+  density: 'comfortable',
+  readingPane: 'right',
+  conversationView: true,
+  defaultComposeFormat: 'plain',
+  autoSaveDrafts: true,
+  showSnippets: true,
+  defaultSearchScope: 'all',
+  inboxType: 'default',
+  confirmBeforeDelete: false,
+  confirmBeforeArchive: false,
+  defaultReminder: '1hour',
+};
+
+export const signatures = [
+  {
+    id: 'sig-001',
+    name: 'Default',
+    content: 'Best regards,\nAlex Morgan\nFlowmail Developer',
+    isDefault: true,
+  },
+  {
+    id: 'sig-002',
+    name: 'Formal',
+    content: 'Sincerely,\nAlex Morgan\nSoftware Engineer\nFlowmail',
+    isDefault: false,
+  },
+];
+
+export const filters = [
+  {
+    id: 'filter-001',
+    name: 'Important emails',
+    conditions: [
+      { field: 'from', operator: 'contains', value: 'manager' },
+    ],
+    actions: [
+      { action: 'addLabel', value: 'work' },
+      { action: 'markImportant', value: true },
+    ],
+    enabled: true,
+  },
+  {
+    id: 'filter-002',
+    name: 'Newsletters',
+    conditions: [
+      { field: 'subject', operator: 'contains', value: 'Newsletter' },
+    ],
+    actions: [
+      { action: 'addLabel', value: 'marketing' },
+      { action: 'markRead', value: true },
+    ],
+    enabled: true,
+  },
+];
+
+export const notifications = {
+  emailNotifications: true,
+  desktopNotifications: false,
+  soundEnabled: false,
+  notifyForReplies: true,
+  notifyForMentions: true,
+};
+
+export const storage = {
+  used: 2.4,
+  total: 15,
+  breakdown: {
+    emails: 1.8,
+    attachments: 0.4,
+    drafts: 0.1,
+    trash: 0.1,
+  },
+};
+
+export const scheduledEmails = [
+  {
+    id: 'scheduled-001',
+    subject: 'Weekly Status Report',
+    to: [{ name: 'Team', email: 'team@flowmail.com' }],
+    scheduledFor: new Date('2026-04-02T09:00:00'),
+    status: 'scheduled',
+  },
+];
+
+export const snoozedEmails = [
+  {
+    id: 'snooze-001',
+    subject: 'Follow up on Q4 mockups',
+    snoozedUntil: new Date('2026-04-05T09:00:00'),
+    originalFolder: 'inbox',
+  },
+  {
+    id: 'snooze-002',
+    subject: 'Review invoice from Tech Corp',
+    snoozedUntil: new Date('2026-04-03T14:00:00'),
+    originalFolder: 'inbox',
+  },
+];
+
+export const shortcuts = {
+  'c': { action: 'compose', label: 'Compose' },
+  'r': { action: 'reply', label: 'Reply' },
+  'a': { action: 'replyAll', label: 'Reply All' },
+  'f': { action: 'forward', label: 'Forward' },
+  'e': { action: 'archive', label: 'Archive' },
+  'd': { action: 'delete', label: 'Delete' },
+  's': { action: 'star', label: 'Toggle Star' },
+  'v': { action: 'move', label: 'Move to' },
+  'l': { action: 'label', label: 'Add label' },
+  'k': { action: 'previous', label: 'Previous message' },
+  'j': { action: 'next', label: 'Next message' },
+  'enter': { action: 'open', label: 'Open message' },
+  'u': { action: 'unread', label: 'Mark unread' },
+  '#': { action: 'delete', label: 'Delete' },
+  '?': { action: 'help', label: 'Show keyboard shortcuts' },
+  'g': { action: 'go', label: 'Go to folder' },
+  '/': { action: 'search', label: 'Search' },
+};

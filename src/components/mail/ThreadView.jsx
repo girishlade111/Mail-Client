@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { MessageBlock } from './MessageBlock';
 import './ThreadView.css';
 
-export function ThreadView({ thread, onBack }) {
+export function ThreadView({ thread }) {
   const [expandedMessages, setExpandedMessages] = useState(
     thread.messages.reduce((acc, msg, idx) => {
       acc[msg.id] = idx === thread.messages.length - 1;
