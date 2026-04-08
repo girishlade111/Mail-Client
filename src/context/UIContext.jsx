@@ -17,12 +17,18 @@ export function UIProvider({ children }) {
   const [searchActive, setSearchActive] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [currentView, setCurrentView] = useState('main');
+  const [settingsTab, setSettingsTab] = useState('general');
 
   const toggleSidebar = useCallback(() => setSidebarOpen(prev => !prev), []);
   const toggleRightPanel = useCallback(() => setRightPanelOpen(prev => !prev), []);
   const openCompose = useCallback(() => setComposeOpen(true), []);
   const closeCompose = useCallback(() => setComposeOpen(false), []);
   const toggleComposeMaximized = useCallback(() => setComposeMaximized(prev => !prev), []);
+  const goToSettings = useCallback((tab) => { if (tab) setSettingsTab(tab); setCurrentView('settings'); }, []);
+  const goToContacts = useCallback(() => setCurrentView('contacts'), []);
+  const goToSearch = useCallback(() => setCurrentView('search'), []);
+  const goToMain = useCallback(() => setCurrentView('main'), []);
 
   const addToast = useCallback((message, type = 'info', duration = 5000) => {
     const id = Date.now();
@@ -89,6 +95,14 @@ export function UIProvider({ children }) {
     openCompose,
     closeCompose,
     toggleComposeMaximized,
+    currentView,
+    setCurrentView,
+    settingsTab,
+    setSettingsTab,
+    goToSettings,
+    goToContacts,
+    goToSearch,
+    goToMain,
   };
 
   return <UIContext.Provider value={value}>{children}</UIContext.Provider>;

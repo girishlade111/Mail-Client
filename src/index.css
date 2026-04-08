@@ -284,3 +284,24 @@ input, textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 280px;
+  }
+  
+  .app-body {
+    flex-direction: column;
+  }
+  
+  .main-content {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --header-height: 48px;
+    --sidebar-width: 100%;
+  }
+}

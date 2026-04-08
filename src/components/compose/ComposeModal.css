@@ -27,14 +27,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: var(--accent-bg);
+  background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
 }
 
 .compose-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--text-h);
 }
 
 .compose-header-actions {
@@ -102,18 +102,62 @@
   margin: 0;
 }
 
+.compose-cc-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .compose-cc-toggle {
   background: none;
   border: none;
   font-size: 13px;
   color: var(--text);
-  padding: 8px 0;
+  padding: 4px 0;
   cursor: pointer;
   text-align: left;
 }
 
 .compose-cc-toggle:hover {
   color: var(--text-h);
+}
+
+.compose-cc-remove {
+  background: none;
+  border: none;
+  padding: 0 8px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.compose-cc-remove:hover {
+  color: var(--danger);
+}
+
+.compose-attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.attachment-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.attachment-chip button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text);
 }
 
 .compose-editor {
@@ -135,6 +179,100 @@
   opacity: 0.5;
 }
 
+.compose-toolbar {
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.toolbar-btn {
+  background: none;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--text);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-h);
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.compose-ai-panel {
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+  animation: slideDown 0.2s ease;
+}
+
+.ai-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+
+.ai-panel-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.ai-options {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.ai-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 80px;
+}
+
+.ai-option:hover {
+  border-color: var(--accent);
+  background: var(--bg-selected);
+}
+
+.ai-option-icon {
+  font-size: 20px;
+}
+
+.ai-option-label {
+  font-size: 12px;
+  color: var(--text);
+}
+
 .compose-footer {
   display: flex;
   align-items: center;
@@ -148,6 +286,23 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.schedule-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-option {
+  padding: 8px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.schedule-option:hover {
+  background: var(--bg-hover);
 }
 
 .send-options-btn {
@@ -191,6 +346,38 @@
 
 .compose-toolbar-btn.ai-assist {
   color: var(--accent);
+}
+
+.compose-toolbar-btn.ai-assist:hover {
+  background: var(--accent-subtle);
+}
+
+.priority-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.priority-btn.normal {
+  color: var(--text);
+}
+
+.priority-btn.high {
+  color: var(--danger);
+}
+
+.priority-btn.low {
+  color: var(--text);
+  opacity: 0.5;
+}
+
+.priority-btn:hover {
+  background: var(--bg-hover);
 }
 
 @media (max-width: 768px) {

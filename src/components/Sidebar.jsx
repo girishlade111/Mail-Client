@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Inbox, Star, Clock, Send, File, Calendar, AlertTriangle, Trash2, Archive, User, Settings, Plus, ChevronDown, ChevronRight, Briefcase, Heart, DollarSign, Users, Package, Megaphone, AlertCircle, Tag } from 'lucide-react';
+import { Inbox, Star, Clock, Send, File, Calendar, AlertTriangle, Trash2, Archive, User, Settings, Plus, ChevronDown, ChevronRight, Briefcase, Heart, DollarSign, Users, Package, Megaphone, AlertCircle, Tag, Search } from 'lucide-react';
 import { useMail } from '../context/MailContext';
 import { useUI } from '../context/UIContext';
 import { Button } from './ui';
@@ -42,7 +42,7 @@ const labelIcons = {
 
 export function Sidebar({ isOpen, onClose }) {
   const { currentFolder, setCurrentFolder, allEmails, labels } = useMail();
-  const { openCompose } = useUI();
+  const { openCompose, goToContacts, goToSearch, goToSettings } = useUI();
   const [labelsExpanded, setLabelsExpanded] = useState(true);
 
   const getUnreadCount = (folder) => {
@@ -148,15 +148,19 @@ export function Sidebar({ isOpen, onClose }) {
         <div className="sidebar-divider" />
 
         <nav className="sidebar-nav">
-          <button className="sidebar-item">
+          <button className="sidebar-item" onClick={() => { goToContacts(); onClose?.(); }}>
             <User size={18} />
             <span className="sidebar-label">Contacts</span>
+          </button>
+          <button className="sidebar-item" onClick={() => { goToSearch(); onClose?.(); }}>
+            <Search size={18} />
+            <span className="sidebar-label">Search</span>
           </button>
           <button className="sidebar-item">
             <Calendar size={18} />
             <span className="sidebar-label">Calendar</span>
           </button>
-          <button className="sidebar-item">
+          <button className="sidebar-item" onClick={() => { goToSettings(); onClose?.(); }}>
             <Settings size={18} />
             <span className="sidebar-label">Settings</span>
           </button>

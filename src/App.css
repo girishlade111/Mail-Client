@@ -68,6 +68,253 @@
   background: var(--bg);
 }
 
+/* Contacts View */
+.contacts-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.contacts-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.contacts-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--text);
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.back-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-h);
+}
+
+.contacts-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  color: var(--text);
+}
+
+.contacts-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: var(--text-h);
+}
+
+.contacts-filters {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.filter-tab:hover {
+  background: var(--bg-hover);
+}
+
+.filter-tab.active {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.contacts-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.contact-card:hover {
+  background: var(--bg-secondary);
+  border-color: var(--accent);
+}
+
+.contact-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.contact-info {
+  flex: 1;
+}
+
+.contact-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.favorite-star {
+  color: var(--warning);
+  fill: var(--warning);
+}
+
+.contact-email {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.contact-org {
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.contact-tags {
+  display: flex;
+  gap: 6px;
+}
+
+.contact-tag {
+  padding: 4px 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+/* Search View */
+.search-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.search-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.search-count {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.search-filters {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-chip {
+  padding: 6px 12px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.filter-chip:hover {
+  background: var(--bg-hover);
+}
+
+.filter-chip.active {
+  background: var(--accent-subtle);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.search-results {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  color: var(--text);
+  gap: 12px;
+  opacity: 0.6;
+}
+
+.no-results p {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.no-results span {
+  font-size: 13px;
+}
+
 @media (max-width: 1024px) {
   .mail-list {
     width: 100%;

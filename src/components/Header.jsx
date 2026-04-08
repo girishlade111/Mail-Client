@@ -1,4 +1,5 @@
-import { Search, Bell, Settings, Menu, Sun, Moon, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Bell, Settings, Menu, Sun, Moon, Plus, ChevronDown, User } from 'lucide-react';
 import { useMail } from '../context/MailContext';
 import { useUI } from '../context/UIContext';
 import { useTheme } from '../context/ThemeContext';
@@ -6,9 +7,10 @@ import { Avatar, Button } from './ui';
 import './Header.css';
 
 export function Header({ onMenuClick }) {
-  const { currentUser, searchQuery, setSearchQuery } = useMail();
-  const { openCompose } = useUI();
+  const { currentUser, searchQuery, setSearchQuery, accounts } = useMail();
+  const { openCompose, goToSettings } = useUI();
   const { theme, toggleTheme } = useTheme();
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
 
   return (
     <header className="header">
@@ -49,10 +51,40 @@ export function Header({ onMenuClick }) {
         <Button variant="ghost" size="sm" className="icon-btn" onClick={toggleTheme} title="Toggle theme">
           {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
         </Button>
-        <Button variant="ghost" size="sm" className="icon-btn" title="Settings">
+        <Button variant="ghost" size="sm" className="icon-btn" onClick={() => goToSettings()} title="Settings">
           <Settings size={18} />
         </Button>
-        <Avatar fallback={currentUser.name} size="sm" />
+        
+        <div className="account-switcher">
+          <button className="account-btn" onClick={() => setShowAccountMenu(!showAccountMenu)}>
+            <Avatar fallback={currentUser.name} size="sm" />
+            <ChevronDown size={14} className="account-chevron" />
+          </button>
+          {showAccountMenu && (
+            <div className="account-menu">
+              <div className="account-menu-header">
+                <span className="account-menu-email">{currentUser.email}</span>
+              </div>
+              <div className="account-menu-items">
+                <button className="account-menu-item active">
+                  <div className="account-menu-avatar" style={{ backgroundColor: '#4361ee' }}>
+                    {currentUser.name.charAt(0)}
+                  </div>
+                  <div className="account-menu-info">
+                    <span className="account-menu-name">{currentUser.name}</span>
+                    <span className="account-menu-email-small">{currentUser.email}</span>
+                  </div>
+                </button>
+              </div>
+              <div className="account-menu-footer">
+                <button className="account-add-btn">
+                  <Plus size={16} />
+                  Add account
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
