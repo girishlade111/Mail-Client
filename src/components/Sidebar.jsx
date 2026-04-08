@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Inbox, Star, Clock, Send, File, Calendar, AlertTriangle, Trash2, Archive, User, Settings, Plus, ChevronDown, ChevronRight, Briefcase, Heart, DollarSign, Users, Package, Megaphone, AlertCircle, Tag, Search } from 'lucide-react';
+import { Inbox, Star, Clock, Send, File, Calendar, AlertTriangle, Trash2, Archive, User, Settings, Plus, ChevronDown, ChevronRight, Briefcase, Heart, DollarSign, Users, Package, Megaphone, AlertCircle, Tag, Search, Paperclip, Filter, MessageSquare, Receipt, FileText } from 'lucide-react';
 import { useMail } from '../context/MailContext';
 import { useUI } from '../context/UIContext';
 import { Button } from './ui';
@@ -41,9 +41,10 @@ const labelIcons = {
 };
 
 export function Sidebar({ isOpen, onClose }) {
-  const { currentFolder, setCurrentFolder, allEmails, labels } = useMail();
-  const { openCompose, goToContacts, goToSearch, goToSettings } = useUI();
+  const { currentFolder, setCurrentFolder, allEmails, labels, quickFilterResults } = useMail();
+  const { openCompose, goToContacts, goToSearch, goToSettings, setCurrentView } = useUI();
   const [labelsExpanded, setLabelsExpanded] = useState(true);
+  const [quickFiltersExpanded, setQuickFiltersExpanded] = useState(true);
 
   const getUnreadCount = (folder) => {
     return allEmails.filter((email) => email.folder === folder && !email.read).length;
@@ -51,6 +52,23 @@ export function Sidebar({ isOpen, onClose }) {
 
   const getLabelCount = (labelId) => {
     return allEmails.filter((email) => email.labels.includes(labelId)).length;
+  };
+
+  const quickFilters = [
+    { id: 'unread', label: 'Unread', icon: Inbox, count: quickFilterResults('unread').length },
+    { id: 'starred', label: 'Starred', icon: Star, count: quickFilterResults('starred').length },
+    { id: 'attachments', label: 'Has attachments', icon: Paperclip, count: quickFilterResults('attachments').length },
+    { id: 'important', label: 'Important', icon: FileText, count: quickFilterResults('important').length },
+    { id: 'invoices', label: 'Invoices', icon: Receipt, count: quickFilterResults('invoices').length },
+    { id: 'meetings', label: 'Meetings', icon: Calendar, count: quickFilterResults('meetings').length },
+  ];
+
+  const handleQuickFilter = (filterId) => {
+    const results = quickFilterResults(filterId);
+    if (results.length > 0) {
+      setCurrentView('search');
+      onClose?.();
+    }
   };
 
   return (
@@ -109,6 +127,37 @@ export function Sidebar({ isOpen, onClose }) {
             );
           })}
         </nav>
+
+        <div className="sidebar-section">
+          <button 
+            className="sidebar-section-header"
+            onClick={() => setQuickFiltersExpanded(!quickFiltersExpanded)}
+          >
+            {quickFiltersExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            <span>Quick filters</span>
+          </button>
+          
+          {quickFiltersExpanded && (
+            <nav className="sidebar-nav">
+              {quickFilters.map((filter) => {
+                const Icon = filter.icon;
+                const isActive = false;
+
+                return (
+                  <button
+                    key={filter.id}
+                    className={`sidebar-item ${isActive ? 'active' : ''}`}
+                    onClick={() => handleQuickFilter(filter.id)}
+                  >
+                    <Icon size={16} />
+                    <span className="sidebar-label">{filter.label}</span>
+                    {filter.count > 0 && <span className="sidebar-badge">{filter.count}</span>}
+                  </button>
+                );
+              })}
+            </nav>
+          )}
+        </div>
 
         <div className="sidebar-section">
           <button 

@@ -1,0 +1,102 @@
+.search-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+  margin-bottom: 8px;
+}
+
+.chips-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.search-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px 4px 6px;
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.search-chip:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.chip-icon {
+  display: flex;
+  align-items: center;
+  color: inherit;
+  opacity: 0.8;
+}
+
+.chip-label {
+  font-weight: 500;
+}
+
+.chip-value {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 2px;
+  margin-left: 2px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  border-radius: 50%;
+}
+
+.chip-remove:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.chips-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.chip-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chip-action-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.chip-action-btn.clear-all:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: var(--danger-subtle);
+}

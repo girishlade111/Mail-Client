@@ -88,61 +88,101 @@ function ContactsView({ onBack }) {
 }
 
 function SearchView({ onBack }) {
-  const { emails, searchQuery } = useMail();
+  const { searchQuery, isSearchActive, searchResults, searchState, clearSearch, setShowAdvancedSearch } = useMail();
+  const { setSelectedEmail, setSidebarOpen } = useUI();
   const [searchType, setSearchType] = useState('all');
 
-  const searchResults = emails.filter(email => 
-    searchQuery && (
-      email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      email.from.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      email.body.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+  const handleEmailSelect = (email) => {
+    setSelectedEmail(email);
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
+  };
+
+  const hasActiveFilters = isSearchActive && Object.keys(searchState).some(key => {
+    if (key === 'query') return false;
+    const value = searchState[key];
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'boolean') return value;
+    return value !== '' && value !== null;
+  });
+
+  const handleClearSearch = () => {
+    clearSearch();
+  };
 
   return (
     <div className="search-view">
-      <div className="search-header">
-        <button className="back-btn" onClick={onBack}>← Back</button>
-        <h2>Search Results</h2>
-        <span className="search-count">{searchResults.length} results for "{searchQuery}"</span>
-      </div>
-
-      <div className="search-filters">
-        <button className={`filter-chip ${searchType === 'all' ? 'active' : ''}`} onClick={() => setSearchType('all')}>
-          All
-        </button>
-        <button className={`filter-chip ${searchType === 'from' ? 'active' : ''}`} onClick={() => setSearchType('from')}>
-          From
-        </button>
-        <button className={`filter-chip ${searchType === 'to' ? 'active' : ''}`} onClick={() => setSearchType('to')}>
-          To
-        </button>
-        <button className={`filter-chip ${searchType === 'subject' ? 'active' : ''}`} onClick={() => setSearchType('subject')}>
-          Subject
-        </button>
-        <button className={`filter-chip ${searchType === 'hasAttachment' ? 'active' : ''}`} onClick={() => setSearchType('hasAttachment')}>
-          Has attachment
-        </button>
-      </div>
-
-      <div className="search-results">
-        {searchResults.length === 0 ? (
-          <div className="no-results">
-            <Search size={48} />
-            <p>No emails found</p>
-            <span>Try adjusting your search terms</span>
+      {!isSearchActive || !searchQuery ? (
+        <div className="search-empty_state">
+          <Search size={48} className="empty-icon" />
+          <h3>Search your emails</h3>
+          <p>Enter a search term or use advanced filters</p>
+          <button 
+            className="advanced-search-btn"
+            onClick={() => setShowAdvancedSearch(true)}
+          >
+            Advanced search
+          </button>
+        </div>
+      ) : searchResults.length === 0 ? (
+        <div className="search-no_results">
+          <Search size={48} className="empty-icon" />
+          <h3>No results found</h3>
+          <p>Try adjusting your search terms or filters</p>
+          <button 
+            className="advanced-search-btn"
+            onClick={() => setShowAdvancedSearch(true)}
+          >
+            Advanced search
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="search-header">
+            <div className="search-header-top">
+              <button className="back-btn" onClick={onBack}>← Back</button>
+              <h2>Search Results</h2>
+              <span className="search-count">{searchResults.length} results for "{searchQuery}"</span>
+            </div>
+            
+            <div className="search-filters">
+              <button className={`filter-chip ${searchType === 'all' ? 'active' : ''}`} onClick={() => setSearchType('all')}>
+                All
+              </button>
+              <button className={`filter-chip ${searchType === 'from' ? 'active' : ''}`} onClick={() => setSearchType('from')}>
+                From
+              </button>
+              <button className={`filter-chip ${searchType === 'to' ? 'active' : ''}`} onClick={() => setSearchType('to')}>
+                To
+              </button>
+              <button className={`filter-chip ${searchType === 'subject' ? 'active' : ''}`} onClick={() => setSearchType('subject')}>
+                Subject
+              </button>
+              <button className={`filter-chip ${searchType === 'hasAttachment' ? 'active' : ''}`} onClick={() => setSearchType('hasAttachment')}>
+                Has attachment
+              </button>
+              <button 
+                className="filter-chip clear-btn"
+                onClick={handleClearSearch}
+              >
+                Clear
+              </button>
+            </div>
           </div>
-        ) : (
-          searchResults.map(email => (
-            <MailRow
-              key={email.id}
-              email={email}
-              isSelected={false}
-              onClick={() => {}}
-            />
-          ))
-        )}
-      </div>
+
+          <div className="search-results">
+            {searchResults.map(email => (
+              <MailRow
+                key={email.id}
+                email={email}
+                isSelected={false}
+                onClick={() => handleEmailSelect(email)}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

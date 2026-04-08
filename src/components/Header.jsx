@@ -1,16 +1,23 @@
 import { useState } from 'react';
-import { Search, Bell, Settings, Menu, Sun, Moon, Plus, ChevronDown, User } from 'lucide-react';
+import { Bell, Settings, Menu, Sun, Moon, Plus, ChevronDown } from 'lucide-react';
 import { useMail } from '../context/MailContext';
 import { useUI } from '../context/UIContext';
 import { useTheme } from '../context/ThemeContext';
 import { Avatar, Button } from './ui';
+import { SearchBar } from './search/SearchBar';
 import './Header.css';
 
 export function Header({ onMenuClick }) {
-  const { currentUser, searchQuery, setSearchQuery } = useMail();
+  const { searchQuery, setSearchQuery, isSearchActive, setIsSearchActive } = useMail();
   const { openCompose, goToSettings } = useUI();
   const { theme, toggleTheme } = useTheme();
   const [showAccountMenu, setShowAccountMenu] = useState(false);
+
+  const handleSearch = (query) => {
+    if (query) {
+      setIsSearchActive(true);
+    }
+  };
 
   return (
     <header className="header">
@@ -25,19 +32,12 @@ export function Header({ onMenuClick }) {
       </div>
 
       <div className="header-search">
-        <Search size={18} className="search-icon" />
-        <input
-          type="text"
-          placeholder="Search emails..."
+        <SearchBar
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
+          onChange={setSearchQuery}
+          onSubmit={handleSearch}
+          placeholder="Search emails..."
         />
-        {searchQuery && (
-          <button className="search-clear" onClick={() => setSearchQuery('')}>
-            ×
-          </button>
-        )}
       </div>
 
       <div className="header-right">
@@ -57,22 +57,22 @@ export function Header({ onMenuClick }) {
         
         <div className="account-switcher">
           <button className="account-btn" onClick={() => setShowAccountMenu(!showAccountMenu)}>
-            <Avatar fallback={currentUser.name} size="sm" />
+            <Avatar fallback="AM" size="sm" />
             <ChevronDown size={14} className="account-chevron" />
           </button>
           {showAccountMenu && (
             <div className="account-menu">
               <div className="account-menu-header">
-                <span className="account-menu-email">{currentUser.email}</span>
+                <span className="account-menu-email">alex@flowmail.com</span>
               </div>
               <div className="account-menu-items">
                 <button className="account-menu-item active">
                   <div className="account-menu-avatar" style={{ backgroundColor: '#4361ee' }}>
-                    {currentUser.name.charAt(0)}
+                    AM
                   </div>
                   <div className="account-menu-info">
-                    <span className="account-menu-name">{currentUser.name}</span>
-                    <span className="account-menu-email-small">{currentUser.email}</span>
+                    <span className="account-menu-name">Alex Morgan</span>
+                    <span className="account-menu-email-small">alex@flowmail.com</span>
                   </div>
                 </button>
               </div>
