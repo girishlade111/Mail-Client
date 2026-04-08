@@ -11,6 +11,8 @@ export function MailProvider({ children }) {
   const [activeCategory, setActiveCategory] = useState('primary');
   const [sortOrder, setSortOrder] = useState('newest');
   const [conversationView, setConversationView] = useState(true);
+  const [density, setDensity] = useState('comfortable');
+  const [isLoading, setIsLoading] = useState(false);
 
   const threads = useMemo(() => {
     const threadMap = {};
@@ -59,6 +61,18 @@ export function MailProvider({ children }) {
       result.sort((a, b) => {
         if (a.read === b.read) return new Date(b.date) - new Date(a.date);
         return a.read ? 1 : -1;
+      });
+    } else if (sortOrder === 'starred') {
+      result.sort((a, b) => {
+        if (a.starred === b.starred) return new Date(b.date) - new Date(a.date);
+        return a.starred ? -1 : 1;
+      });
+    } else if (sortOrder === 'attachments') {
+      result.sort((a, b) => {
+        const aHasAttach = (a.attachments?.length || 0) > 0;
+        const bHasAttach = (b.attachments?.length || 0) > 0;
+        if (aHasAttach === bHasAttach) return new Date(b.date) - new Date(a.date);
+        return aHasAttach ? -1 : 1;
       });
     }
 
@@ -180,8 +194,12 @@ export function MailProvider({ children }) {
     setActiveCategory,
     sortOrder,
     setSortOrder,
+    density,
+    setDensity,
     conversationView,
     setConversationView,
+    isLoading,
+    setIsLoading,
     starredEmails,
     threads,
     getThread,

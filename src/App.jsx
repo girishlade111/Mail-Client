@@ -1,16 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MailProvider, useMail } from './context/MailContext';
 import { UIProvider, useUI } from './context/UIContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { RightPanel } from './components/RightPanel';
-import { MailRow } from './components/MailRow';
+import { MailRow, MailRowSkeleton } from './components/MailRow';
 import { MailDetail } from './components/MailDetail';
 import { ThreadView } from './components/mail/ThreadView';
 import { ComposeModal } from './components/compose/ComposeModal';
-import { FilterChips } from './components/mail/FilterChips';
+import { FilterChips, EmptyInbox, LoadingState } from './components/mail/FilterChips';
 import { BulkActions } from './components/mail/BulkActions';
+import { InboxHeader } from './components/mail/InboxHeader';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { ToastContainer } from './components/ui/Toast';
@@ -147,10 +148,90 @@ function SearchView({ onBack }) {
 }
 
 function MailApp() {
-  const { emails, selectedEmail, setSelectedEmail, markAsRead, getActiveThread, currentFolder, setCurrentFolder, deleteEmail, archiveEmail, markAsUnread } = useMail();
-  const { sidebarOpen, setSidebarOpen, rightPanelOpen, setRightPanelOpen, composeOpen, setComposeOpen, selectedEmails, deselectAll, toasts, removeToast, commandPaletteOpen, setCommandPaletteOpen, shortcutsOpen, setShortcutsOpen, currentView, setCurrentView, settingsTab, setSettingsTab, goToMain } = useUI();
+  const { 
+    emails, 
+    selectedEmail, 
+    setSelectedEmail, 
+    markAsRead, 
+    getActiveThread, 
+    currentFolder, 
+    setCurrentFolder, 
+    deleteEmail, 
+    archiveEmail, 
+    markAsUnread,
+    moveToFolder,
+    activeCategory,
+    isLoading,
+    markAllAsRead,
+    density
+  } = useMail();
+  const { 
+    sidebarOpen, 
+    setSidebarOpen, 
+    rightPanelOpen, 
+    setRightPanelOpen, 
+    composeOpen, 
+    setComposeOpen, 
+    selectedEmails, 
+    setSelectedEmails,
+    deselectAll, 
+    toasts, 
+    removeToast, 
+    commandPaletteOpen, 
+    setCommandPaletteOpen, 
+    shortcutsOpen, 
+    setShortcutsOpen, 
+    currentView, 
+    setCurrentView, 
+    settingsTab, 
+    setSettingsTab, 
+    goToMain,
+    addToast
+  } = useUI();
   const { toggleTheme } = useTheme();
   const [showThread, setShowThread] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+
+  const handleCheckChange = useCallback((emailId, checked) => {
+    setSelectedEmails(prev => 
+      checked 
+        ? [...prev, emailId] 
+        : prev.filter(id => id !== emailId)
+    );
+  }, [setSelectedEmails]);
+
+  const handleSelectAll = useCallback(() => {
+    if (selectedEmails.length === emails.length) {
+      deselectAll();
+    } else {
+      setSelectedEmails(emails.map(e => e.id));
+    }
+  }, [emails, selectedEmails.length, deselectAll, setSelectedEmails]);
+
+  const handleClearSelection = useCallback(() => {
+    deselectAll();
+  }, [deselectAll]);
+
+  const handleBulkMove = useCallback((folder) => {
+    selectedEmails.forEach(id => moveToFolder(id, folder));
+    addToast(`Moved ${selectedEmails.length} messages to ${folder}`);
+    deselectAll();
+  }, [selectedEmails, moveToFolder, addToast, deselectAll]);
+
+  const handleBulkAddLabel = useCallback((_labelId) => {
+    addToast(`Label added to ${selectedEmails.length} messages`);
+    deselectAll();
+  }, [selectedEmails.length, addToast, deselectAll]);
+
+  const handleEmailSelect = useCallback((email) => {
+    setSelectedEmail(email);
+    if (!email.read) {
+      markAsRead(email.id);
+    }
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
+  }, [setSelectedEmail, markAsRead, setSidebarOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -165,22 +246,39 @@ function MailApp() {
       if (e.key === 'Escape') {
         setCommandPaletteOpen(false);
         setShortcutsOpen(false);
+        if (selectedEmails.length > 0) {
+          deselectAll();
+        }
+      }
+      
+      if (currentView === 'main' && emails.length > 0 && !e.target.matches('input, textarea')) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setFocusedIndex(prev => Math.min(prev + 1, emails.length - 1));
+        }
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setFocusedIndex(prev => Math.max(prev - 1, 0));
+        }
+        if (e.key === 'Enter' && focusedIndex >= 0) {
+          e.preventDefault();
+          const email = emails[focusedIndex];
+          if (email) handleEmailSelect(email);
+        }
+        if (e.key === ' ' && focusedIndex >= 0) {
+          e.preventDefault();
+          const email = emails[focusedIndex];
+          if (email) {
+            const isSelected = selectedEmails.includes(email.id);
+            handleCheckChange(email.id, !isSelected);
+          }
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [setCommandPaletteOpen, setShortcutsOpen]);
-
-  const handleEmailSelect = (email) => {
-    setSelectedEmail(email);
-    if (!email.read) {
-      markAsRead(email.id);
-    }
-    if (window.innerWidth < 1024) {
-      setSidebarOpen(false);
-    }
-  };
+  }, [setCommandPaletteOpen, setShortcutsOpen, selectedEmails, deselectAll, currentView, emails, focusedIndex, handleCheckChange, handleEmailSelect]);
 
   const handleBackToList = () => {
     setSelectedEmail(null);
@@ -199,6 +297,8 @@ function MailApp() {
     archive: 'Archive',
     spam: 'Spam',
     trash: 'Trash',
+    snoozed: 'Snoozed',
+    scheduled: 'Scheduled',
   };
 
   const renderContent = () => {
@@ -227,49 +327,79 @@ function MailApp() {
       default:
         return (
           <>
-            <div className="mail-list">
+            <div className={`mail-list density-${density}`}>
               <div className="mail-list-header">
                 <h2>{folderTitles[currentFolder] || 'Inbox'}</h2>
-                <span className="mail-count">{emails.length} emails</span>
+                <span className="mail-count">{emails.length} messages</span>
               </div>
               
               {currentFolder === 'inbox' && (
                 <FilterChips />
               )}
 
+              <InboxHeader 
+                totalCount={emails.length}
+                selectedCount={selectedEmails.length}
+                allSelected={selectedEmails.length === emails.length && emails.length > 0}
+                onSelectAll={handleSelectAll}
+                onClearSelection={handleClearSelection}
+                onMarkAllRead={markAllAsRead}
+              />
+
               {selectedEmails.length > 0 && (
                 <BulkActions 
                   selectedCount={selectedEmails.length}
                   onArchive={() => {
                     selectedEmails.forEach(id => archiveEmail(id));
+                    addToast(`Archived ${selectedEmails.length} messages`);
                     deselectAll();
                   }}
                   onDelete={() => {
                     selectedEmails.forEach(id => deleteEmail(id));
+                    addToast(`Moved ${selectedEmails.length} messages to trash`);
                     deselectAll();
                   }}
                   onMarkRead={() => {
                     selectedEmails.forEach(id => markAsRead(id));
+                    addToast(`Marked ${selectedEmails.length} as read`);
                     deselectAll();
                   }}
                   onMarkUnread={() => {
                     selectedEmails.forEach(id => markAsUnread(id));
+                    addToast(`Marked ${selectedEmails.length} as unread`);
                     deselectAll();
                   }}
+                  onMoveTo={handleBulkMove}
+                  onAddLabel={handleBulkAddLabel}
                 />
               )}
               
               <div className="mail-list-content">
-                {emails.length === 0 ? (
-                  <div className="empty-state">
-                    <p>No emails found</p>
-                  </div>
+                {isLoading ? (
+                  <>
+                    <MailRowSkeleton />
+                    <MailRowSkeleton />
+                    <MailRowSkeleton />
+                    <MailRowSkeleton />
+                  </>
+                ) : emails.length === 0 ? (
+                  currentFolder === 'inbox' && activeCategory ? (
+                    <EmptyInbox category={activeCategory} />
+                  ) : (
+                    <div className="empty-inbox">
+                      <div className="empty-icon">📭</div>
+                      <h3>No messages</h3>
+                      <p>Your {folderTitles[currentFolder] || 'inbox'} is empty</p>
+                    </div>
+                  )
                 ) : (
-                  emails.map((email) => (
+                  emails.map((email, index) => (
                     <MailRow
                       key={email.id}
                       email={email}
                       isSelected={selectedEmail?.id === email.id}
+                      isChecked={selectedEmails.includes(email.id)}
+                      onCheckChange={handleCheckChange}
                       onClick={() => handleEmailSelect(email)}
                     />
                   ))

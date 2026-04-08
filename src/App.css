@@ -26,6 +26,28 @@
   flex-shrink: 0;
 }
 
+/* Density variants */
+.mail-list.density-compact .mail-row {
+  padding: 6px 16px;
+}
+
+.mail-list.density-compact .mail-row-content {
+  gap: 0;
+}
+
+.mail-list.density-compact .mail-row-subject,
+.mail-list.density-compact .mail-row-preview {
+  display: none;
+}
+
+.mail-list.density-expanded .mail-row {
+  padding: 14px 16px;
+}
+
+.mail-list.density-expanded .mail-row-content {
+  gap: 6px;
+}
+
 .mail-list-header {
   display: flex;
   align-items: center;
