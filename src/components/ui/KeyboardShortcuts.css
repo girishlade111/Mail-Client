@@ -133,3 +133,42 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Compact Shortcuts for Settings */
+.compact-shortcuts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.shortcuts-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.compact-shortcuts .shortcut-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.compact-shortcuts .shortcut-keys kbd {
+  min-width: 20px;
+  padding: 2px 6px;
+  font-size: 11px;
+}
+
+.compact-shortcuts .shortcut-desc {
+  font-size: 12px;
+  color: var(--text);
+}

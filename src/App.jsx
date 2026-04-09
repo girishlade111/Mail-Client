@@ -15,7 +15,7 @@ import { InboxHeader } from './components/mail/InboxHeader';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { ToastContainer } from './components/ui/Toast';
-import { SettingsLayout, SettingsGeneral, SettingsAppearance, SettingsInbox, SettingsAccounts, SettingsSignatures, SettingsFilters, SettingsNotifications, SettingsShortcuts, SettingsOrganization } from './components/settings/SettingsLayout';
+import { SettingsLayout, SettingsGeneral, SettingsAppearance, SettingsInbox, SettingsAccounts, SettingsSignatures, SettingsFilters, SettingsNotifications, SettingsShortcuts, SettingsOrganization, SettingsLabels, SettingsPrivacy } from './components/settings/SettingsLayout';
 import { Search, Star, Users, Circle, Mail } from 'lucide-react';
 import { ContactDrawer } from './components/contacts/ContactDrawer';
 import './App.css';
@@ -445,9 +445,11 @@ function MailApp() {
             {settingsTab === 'accounts' && <SettingsAccounts />}
             {settingsTab === 'signatures' && <SettingsSignatures />}
             {settingsTab === 'filters' && <SettingsFilters />}
+            {settingsTab === 'labels' && <SettingsLabels />}
             {settingsTab === 'organization' && <SettingsOrganization />}
             {settingsTab === 'notifications' && <SettingsNotifications />}
             {settingsTab === 'shortcuts' && <SettingsShortcuts />}
+            {settingsTab === 'privacy' && <SettingsPrivacy />}
           </SettingsLayout>
         );
       case 'contacts':
