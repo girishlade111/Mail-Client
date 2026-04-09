@@ -197,6 +197,32 @@ input, textarea {
   font-family: var(--sans);
 }
 
+/* Global Focus States */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Smooth Transitions */
+button,
+a,
+input,
+textarea,
+select {
+  transition: all var(--transition-fast);
+}
+
 ::selection {
   background: var(--accent-subtle);
   color: var(--accent-text);

@@ -9,6 +9,8 @@
   cursor: pointer;
   border: none;
   transition: all 0.2s ease;
+  min-height: 36px;
+  min-width: 36px;
 }
 
 .btn-primary {
