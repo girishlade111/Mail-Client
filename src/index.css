@@ -1,9 +1,9 @@
 :root {
-  /* Accent Colors */
-  --accent: #4361ee;
-  --accent-hover: #3a56d4;
-  --accent-subtle: #eef1ff;
-  --accent-text: #3451d1;
+  /* Accent Colors - More modern/vibrant indigo */
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-subtle: #eef2ff;
+  --accent-text: #3730a3;
   
   /* Text Colors */
   --text-h: #1a1a2e;
