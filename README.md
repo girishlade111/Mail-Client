@@ -30,6 +30,42 @@
 
 ---
 
+## 🚀 Quick Start
+
+### Running the App
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+The app will be available at **http://localhost:5173**
+
+### How to View Emails
+
+By default, the app opens to the **Inbox** folder. To see all emails:
+
+1. **Inbox** - Default view for new emails (18+ emails)
+2. Click **Sent** in sidebar to view sent emails
+3. Click **Starred** to view starred emails
+4. Click **Archive** to view archived emails
+5. Click **Drafts** to view draft emails (3 emails)
+
+> **Tip**: Use keyboard shortcut `g` then `i` to go to Inbox, `g` then `s` for Sent, `g` then `d` for drafts.
+
+### First Steps
+
+1. ✅ View Inbox emails (default)
+2. ✅ Click an email to read it
+3. ✅ Click "Compose" (or press `c`) to write a new email
+4. ✅ Try dark mode (toggle in settings)
+5. ✅ Explore sidebar folders
+
+---
+
 ## Overview
 
 Flowmail is a **frontend-only** webmail application that demonstrates production-quality UI/UX for email. It's designed to feel like a real, daily-use email product — not a basic template or tutorial project.
@@ -533,6 +569,35 @@ The application includes comprehensive SEO optimization for search engines and s
 - Allows all crawlers
 - Specifies sitemap location
 - Includes crawl-delay for respectful crawling
+
+---
+
+## 🔧 Troubleshooting
+
+### Email Not Visible
+
+**Problem**: Can't see any emails in the inbox.
+
+**Solutions**:
+1. Make sure you're viewing the correct folder (Inbox, Sent, Drafts, etc.)
+2. Click the folder in the sidebar to switch views
+3. Try switching folders: Inbox → Sent → Starred → Archive
+4. Check browser console for JavaScript errors (F12)
+5. Refresh the browser (Ctrl+R or Cmd+R)
+
+### Development Server Not Starting
+
+**Solutions**:
+1. Make sure Node.js 18+ is installed: `node --version`
+2. Delete node_modules and reinstall: `rm -rf node_modules && npm install`
+3. Kill any process using port 5173: `lsof -ti:5173 | xargs kill`
+
+### Build Errors
+
+**Solutions**:
+1. Clear vite cache: `rm -rf node_modules/.vite`
+2. Check for syntax errors in recent file changes
+3. Run lint if available: `npm run lint`
 
 ---
 
