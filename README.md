@@ -6,6 +6,8 @@
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&style=flat-square)
 ![CSS](https://img.shields.io/badge/CSS-Custom_Properties-1572B6?logo=css3&style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![Build Size](https://img.shields.io/badge/Size-549KB-blue?style=flat-square)
+![Files](https://img.shields.io/badge/Files-97-blue?style=flat-square)
 
 ---
 
@@ -161,6 +163,7 @@ Flowmail is a **frontend-only** webmail application that demonstrates production
 | **Vanilla CSS** | Design system with CSS custom properties (no framework) |
 | **Lucide React** | 1000+ clean, consistent SVG icons |
 | **Inter** | Premium UI typeface via Google Fonts |
+| **date-fns** | Date formatting and manipulation |
 
 ### Why These Choices
 
@@ -509,6 +512,30 @@ data/calendar.js    → GET /api/calendar/events
 
 ---
 
+## SEO Configuration
+
+The application includes comprehensive SEO optimization for search engines and social media sharing:
+
+### Meta Tags
+- **Description**: Comprehensive SEO meta description highlighting features
+- **Keywords**: webmail, email client, gmail alternative, etc.
+- **Open Graph**: Full OG tags for social media preview
+- **Twitter Cards**: Summary card with large image
+- **Canonical URL**: Points to https://mail.ladestack.in
+- **Theme Color**: Matches accent color (#4361ee)
+
+### Sitemap
+- All main routes included with priorities and changefreq
+- Dynamic routes: inbox, sent, drafts, starred, archive, trash
+- Feature routes: contacts, settings, search
+
+### robots.txt
+- Allows all crawlers
+- Specifies sitemap location
+- Includes crawl-delay for respectful crawling
+
+---
+
 ## Contributing
 
 1. Fork the repository
@@ -523,6 +550,27 @@ data/calendar.js    → GET /api/calendar/events
 - Keep components focused and under 200 lines
 - Use semantic HTML elements
 - Add aria-labels to all interactive elements
+
+---
+
+## Project Stats
+
+| Metric | Value |
+|--------|-------|
+| **Source Files** | 97 total (54 JSX/JS, 43 CSS) |
+| **Production Bundle** | 549KB (116KB gzipped) |
+| **CSS Size** | 109KB (16KB gzipped) |
+| **Build Time** | < 1 second |
+| **Components** | 60+ React components |
+
+### Build Output
+```
+dist/
+├── index.html         (2.73 KB)
+├── assets/
+│   ├── *.css        (109 KB)
+│   └── *.js         (425 KB)
+```
 
 ---
 
