@@ -10,14 +10,22 @@ export const labels = [
 ];
 
 export const contacts = [
-  { id: 'contact-001', name: 'Sarah Chen', email: 'sarah@designstudio.co', organization: 'Design Studio Co', role: 'Lead Designer', avatar: null, tags: ['client', 'design'], isFavorite: true },
-  { id: 'contact-002', name: 'Mike Johnson', email: 'mike@flowmail.com', organization: 'Flowmail', role: 'Product Manager', avatar: null, tags: ['team'], isFavorite: false },
-  { id: 'contact-003', name: 'Emma Wilson', email: 'emma@techcorp.com', organization: 'Tech Corp', role: 'CEO', avatar: null, tags: ['client'], isFavorite: true },
-  { id: 'contact-004', name: 'David Lee', email: 'david@startup.io', organization: 'Startup.io', role: 'Founder', avatar: null, tags: ['client'], isFavorite: false },
-  { id: 'contact-005', name: 'Lisa Park', email: 'lisa@agency.co', organization: 'Creative Agency', role: 'Art Director', avatar: null, tags: ['client'], isFavorite: false },
-  { id: 'contact-006', name: 'Alex Morgan', email: 'alex@flowmail.com', organization: 'Flowmail', role: 'Developer', avatar: null, tags: ['team'], isFavorite: false },
-  { id: 'contact-007', name: 'James Taylor', email: 'james@finance.com', organization: 'Finance Inc', role: 'CFO', avatar: null, tags: ['finance'], isFavorite: false },
-  { id: 'contact-008', name: 'Rachel Green', email: 'rachel@design.co', organization: 'Design Co', role: 'Designer', avatar: null, tags: ['team'], isFavorite: true },
+  { id: 'contact-001', name: 'Sarah Chen', email: 'sarah@designstudio.co', organization: 'Design Studio Co', role: 'Lead Designer', phone: '+1 555-123-4567', avatar: null, tags: ['client', 'design'], isFavorite: true, notes: 'Lead designer for Q4 redesign project', lastInteraction: '2026-03-31T14:30:00', createdAt: '2025-06-15' },
+  { id: 'contact-002', name: 'Mike Johnson', email: 'mike@flowmail.com', organization: 'Flowmail', role: 'Product Manager', phone: '+1 555-234-5678', avatar: null, tags: ['team'], isFavorite: false, notes: 'Product Manager for the webmail project', lastInteraction: '2026-03-30T10:00:00', createdAt: '2025-01-10' },
+  { id: 'contact-003', name: 'Emma Wilson', email: 'emma@techcorp.com', organization: 'Tech Corp', role: 'CEO', phone: '+1 555-345-6789', avatar: null, tags: ['client'], isFavorite: true, notes: 'CEO of Tech Corp, handles high-level decisions', lastInteraction: '2026-03-28T16:00:00', createdAt: '2024-11-20' },
+  { id: 'contact-004', name: 'David Lee', email: 'david@startup.io', organization: 'Startup.io', role: 'Founder', phone: '+1 555-456-7890', avatar: null, tags: ['client'], isFavorite: false, notes: 'Founder at Startup.io, working on Series B', lastInteraction: '2026-03-25T11:30:00', createdAt: '2025-03-05' },
+  { id: 'contact-005', name: 'Lisa Park', email: 'lisa@agency.co', organization: 'Creative Agency', role: 'Art Director', phone: '+1 555-567-8901', avatar: null, tags: ['client'], isFavorite: false, notes: 'Art Director for marketing campaigns', lastInteraction: '2026-03-22T14:15:00', createdAt: '2025-07-22' },
+  { id: 'contact-006', name: 'Alex Morgan', email: 'alex@flowmail.com', organization: 'Flowmail', role: 'Developer', phone: '+1 555-678-9012', avatar: null, tags: ['team'], isFavorite: false, notes: 'Frontend developer, works on React components', lastInteraction: '2026-03-31T15:45:00', createdAt: '2024-08-01' },
+  { id: 'contact-007', name: 'James Taylor', email: 'james@finance.com', organization: 'Finance Inc', role: 'CFO', phone: '+1 555-789-0123', avatar: null, tags: ['finance', 'vendor'], isFavorite: false, notes: 'CFO handling all financial matters', lastInteraction: '2026-03-20T09:00:00', createdAt: '2024-05-12' },
+  { id: 'contact-008', name: 'Rachel Green', email: 'rachel@design.co', organization: 'Design Co', role: 'Designer', phone: '+1 555-890-1234', avatar: null, tags: ['team'], isFavorite: true, notes: 'Senior designer, collaborates on UI updates', lastInteraction: '2026-03-29T13:20:00', createdAt: '2025-02-28' },
+  { id: 'contact-009', name: 'Tom Wilson', email: 'tom@consulting.io', organization: 'Consulting Group', role: 'Consultant', phone: '+1 555-901-2345', avatar: null, tags: ['vendor'], isFavorite: false, notes: 'Technical consultant for infrastructure', lastInteraction: '2026-03-18T10:30:00', createdAt: '2025-09-10' },
+  { id: 'contact-010', name: 'Jane Smith', email: 'jane@support.com', organization: 'Support Solutions', role: 'Support Lead', phone: '+1 555-012-3456', avatar: null, tags: ['vendor'], isFavorite: false, notes: 'Customer support lead for enterprise clients', lastInteraction: '2026-03-15T16:45:00', createdAt: '2025-04-18' },
+];
+
+export const contactGroups = [
+  { id: 'group-team', name: 'Team', type: 'team', color: '#3b82f6', memberIds: ['contact-002', 'contact-006', 'contact-008'] },
+  { id: 'group-clients', name: 'Clients', type: 'clients', color: '#f59e0b', memberIds: ['contact-001', 'contact-003', 'contact-004', 'contact-005'] },
+  { id: 'group-vendors', name: 'Vendors', type: 'vendors', color: '#22c55e', memberIds: ['contact-007', 'contact-009', 'contact-010'] },
 ];
 
 export const tasks = [

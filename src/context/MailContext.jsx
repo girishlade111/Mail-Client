@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { emails as initialEmails, labels as initialLabels, contacts, tasks, calendarEvents, currentUser, accounts as mockAccounts } from '../data/mock';
+import { emails as initialEmails, labels as initialLabels, contacts as initialContacts, contactGroups, tasks, calendarEvents, currentUser, accounts as mockAccounts } from '../data/mock';
 
 const MailContext = createContext(null);
 
@@ -61,6 +61,9 @@ export function MailProvider({ children }) {
   const [accounts, setAccounts] = useState(mockAccounts);
   const [activeAccountId, setActiveAccountId] = useState(mockAccounts[0]?.id || 'account-1');
   const [unifiedInboxEnabled, setUnifiedInboxEnabled] = useState(false);
+  
+  const [contacts, setContacts] = useState(initialContacts);
+  const [selectedContact, setSelectedContact] = useState(null);
   
   const [searchState, setSearchState] = useState(initialSearchState);
   const [searchHistory, setSearchHistory] = useState([
@@ -505,6 +508,65 @@ export function MailProvider({ children }) {
     setIsSearchActive(false);
   }, []);
 
+  const toggleContactFavorite = useCallback((contactId) => {
+    setContacts(prev =>
+      prev.map(c => c.id === contactId ? { ...c, isFavorite: !c.isFavorite } : c)
+    );
+  }, []);
+
+  const addContact = useCallback((contact) => {
+    const newContact = {
+      ...contact,
+      id: `contact-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      lastInteraction: new Date().toISOString(),
+    };
+    setContacts(prev => [...prev, newContact]);
+  }, []);
+
+  const updateContact = useCallback((contactId, updates) => {
+    setContacts(prev =>
+      prev.map(c => c.id === contactId ? { ...c, ...updates } : c)
+    );
+  }, []);
+
+  const deleteContact = useCallback((contactId) => {
+    setContacts(prev => prev.filter(c => c.id !== contactId));
+  }, []);
+
+  const addTagToContact = useCallback((contactId, tag) => {
+    setContacts(prev =>
+      prev.map(c => c.id === contactId && !c.tags.includes(tag) ? { ...c, tags: [...c.tags, tag] } : c)
+    );
+  }, []);
+
+  const removeTagFromContact = useCallback((contactId, tag) => {
+    setContacts(prev =>
+      prev.map(c => c.id === contactId ? { ...c, tags: c.tags.filter(t => t !== tag) } : c)
+    );
+  }, []);
+
+  const getRecentContacts = useCallback((limit = 5) => {
+    return [...contacts]
+      .filter(c => c.lastInteraction)
+      .sort((a, b) => new Date(b.lastInteraction) - new Date(a.lastInteraction))
+      .slice(0, limit);
+  }, [contacts]);
+
+  const searchContacts = useCallback((query) => {
+    if (!query) return [];
+    const q = query.toLowerCase();
+    return contacts.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.email.toLowerCase().includes(q) ||
+      c.organization?.toLowerCase().includes(q)
+    );
+  }, [contacts]);
+
+  const getContactByEmail = useCallback((email) => {
+    return contacts.find(c => c.email.toLowerCase() === email.toLowerCase());
+  }, [contacts]);
+
   const filteredEmails = useMemo(() => {
     let result = emails.filter((email) => {
       const matchesAccount = unifiedInboxEnabled || email.accountId === activeAccountId;
@@ -826,6 +888,19 @@ export function MailProvider({ children }) {
     toggleUnifiedInbox,
     getAccountById,
     getAccountColor,
+    contacts,
+    contactGroups,
+    selectedContact,
+    setSelectedContact,
+    toggleContactFavorite,
+    addContact,
+    updateContact,
+    deleteContact,
+    addTagToContact,
+    removeTagFromContact,
+    getRecentContacts,
+    searchContacts,
+    getContactByEmail,
     threads,
     getThread,
     getActiveThread,

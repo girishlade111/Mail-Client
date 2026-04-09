@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { MailProvider, useMail } from './context/MailContext';
 import { UIProvider, useUI } from './context/UIContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
@@ -16,19 +16,57 @@ import { CommandPalette } from './components/ui/CommandPalette';
 import { KeyboardShortcuts } from './components/ui/KeyboardShortcuts';
 import { ToastContainer } from './components/ui/Toast';
 import { SettingsLayout, SettingsGeneral, SettingsAppearance, SettingsInbox, SettingsAccounts, SettingsSignatures, SettingsFilters, SettingsNotifications, SettingsShortcuts, SettingsOrganization } from './components/settings/SettingsLayout';
-import { Search, Star, Users, Circle } from 'lucide-react';
+import { Search, Star, Users, Circle, Mail } from 'lucide-react';
+import { ContactDrawer } from './components/contacts/ContactDrawer';
 import './App.css';
 
 function ContactsView({ onBack }) {
-  const { contacts } = useMail();
+  const { contacts, contactGroups, toggleContactFavorite, setSelectedContact, getRecentContacts, selectedContact } = useMail();
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
+  const { openCompose } = useUI();
 
-  const filteredContacts = contacts.filter(c => 
-    filter === 'all' || 
-    (filter === 'favorites' && c.isFavorite) ||
-    c.tags.includes(filter)
-  );
+  const filteredContacts = useMemo(() => {
+    let result = contacts.filter(c => 
+      filter === 'all' || 
+      (filter === 'favorites' && c.isFavorite) ||
+      c.tags.includes(filter)
+    );
+    
+    if (searchTerm) {
+      const q = searchTerm.toLowerCase();
+      result = result.filter(c =>
+        c.name.toLowerCase().includes(q) ||
+        c.email.toLowerCase().includes(q) ||
+        c.organization?.toLowerCase().includes(q)
+      );
+    }
+    
+    return result;
+  }, [contacts, filter, searchTerm]);
+
+  const groupedContacts = useMemo(() => {
+    const favorites = filteredContacts.filter(c => c.isFavorite).slice(0, 5);
+    const groups = {};
+    
+    filteredContacts.filter(c => !c.isFavorite).forEach(contact => {
+      const letter = contact.name.charAt(0).toUpperCase();
+      if (!groups[letter]) groups[letter] = [];
+      groups[letter].push(contact);
+    });
+    
+    return { favorites, groups };
+  }, [filteredContacts]);
+
+  const recentContacts = getRecentContacts(3);
+
+  const handleContactClick = (contact) => {
+    setSelectedContact(contact);
+  };
+
+  const handleCompose = (contact) => {
+    openCompose({ to: [{ name: contact.name, email: contact.email }] });
+  };
 
   return (
     <div className="contacts-view">
@@ -48,40 +86,91 @@ function ContactsView({ onBack }) {
       
       <div className="contacts-filters">
         <button className={`filter-tab ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>
-          <Users size={16} /> All
+          <Users size={16} /> All ({contacts.length})
         </button>
         <button className={`filter-tab ${filter === 'favorites' ? 'active' : ''}`} onClick={() => setFilter('favorites')}>
           <Star size={16} /> Favorites
         </button>
-        <button className={`filter-tab ${filter === 'client' ? 'active' : ''}`} onClick={() => setFilter('client')}>
-          <Circle size={16} /> Clients
-        </button>
-        <button className={`filter-tab ${filter === 'team' ? 'active' : ''}`} onClick={() => setFilter('team')}>
-          <Users size={16} /> Team
-        </button>
+        {contactGroups.map(group => (
+          <button key={group.id} className={`filter-tab ${filter === group.id ? 'active' : ''}`} onClick={() => setFilter(group.memberIds[0])}>
+            <Circle size={16} /> {group.name}
+          </button>
+        ))}
       </div>
 
       <div className="contacts-list">
-        {filteredContacts.map(contact => (
-          <div key={contact.id} className="contact-card">
-            <div className="contact-avatar">
-              {contact.name.charAt(0)}
+        {recentContacts.length > 0 && filter === 'all' && !searchTerm && (
+          <div className="contacts-section">
+            <h3 className="section-title">Recently Contacted</h3>
+            <div className="contacts-grid">
+              {recentContacts.map(contact => (
+                <div key={contact.id} className="contact-card clickable" onClick={() => handleContactClick(contact)}>
+                  <div className="contact-avatar">{contact.name.charAt(0)}</div>
+                  <div className="contact-info">
+                    <div className="contact-name">{contact.name}</div>
+                    <div className="contact-email">{contact.email}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="contact-info">
-              <div className="contact-name">
-                {contact.name}
-                {contact.isFavorite && <Star size={14} className="favorite-star" />}
-              </div>
-              <div className="contact-email">{contact.email}</div>
-              <div className="contact-org">{contact.organization}</div>
+          </div>
+        )}
+        
+        {groupedContacts.favorites.length > 0 && (filter === 'all' || filter === 'favorites') && !searchTerm && (
+          <div className="contacts-section">
+            <h3 className="section-title">Favorites</h3>
+            <div className="contacts-grid">
+              {groupedContacts.favorites.map(contact => (
+                <div key={contact.id} className="contact-card clickable" onClick={() => handleContactClick(contact)}>
+                  <div className="contact-avatar">{contact.name.charAt(0)}</div>
+                  <div className="contact-info">
+                    <div className="contact-name">
+                      {contact.name}
+                      <Star size={14} className="favorite-star" fill="#eab308" />
+                    </div>
+                    <div className="contact-email">{contact.email}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="contact-tags">
-              {contact.tags.map(tag => (
-                <span key={tag} className="contact-tag">{tag}</span>
+          </div>
+        )}
+        
+        {Object.keys(groupedContacts.groups).sort().map(letter => (
+          <div key={letter} className="contacts-section">
+            <h3 className="section-title">{letter}</h3>
+            <div className="contacts-grid">
+              {groupedContacts.groups[letter].map(contact => (
+                <div key={contact.id} className="contact-card clickable" onClick={() => handleContactClick(contact)}>
+                  <div className="contact-avatar">{contact.name.charAt(0)}</div>
+                  <div className="contact-info">
+                    <div className="contact-name">
+                      {contact.name}
+                      {contact.isFavorite && <Star size={14} className="favorite-star" fill="#eab308" />}
+                    </div>
+                    <div className="contact-email">{contact.email}</div>
+                    <div className="contact-org">{contact.organization} • {contact.role}</div>
+                  </div>
+                  <button 
+                    className="contact-compose-btn" 
+                    onClick={(e) => { e.stopPropagation(); handleCompose(contact); }}
+                    title="Compose"
+                  >
+                    <Mail size={14} />
+                  </button>
+                </div>
               ))}
             </div>
           </div>
         ))}
+        
+        {filteredContacts.length === 0 && (
+          <div className="contacts-empty">
+            <Users size={48} />
+            <h4>No contacts found</h4>
+            <p>Try adjusting your search or filters</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -362,7 +451,17 @@ function MailApp() {
           </SettingsLayout>
         );
       case 'contacts':
-        return <ContactsView onBack={goToMain} />;
+        return (
+          <>
+            <ContactsView onBack={goToMain} />
+            {selectedContact && (
+              <ContactDrawer 
+                contact={selectedContact} 
+                onClose={() => setSelectedContact(null)} 
+              />
+            )}
+          </>
+        );
       case 'search':
         return <SearchView onBack={goToMain} />;
       default:
