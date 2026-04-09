@@ -136,9 +136,10 @@ export function UIProvider({ children }) {
   const goToSearch = useCallback(() => setCurrentView('search'), []);
   const goToMain = useCallback(() => setCurrentView('main'), []);
 
-  const addToast = useCallback((message, type = 'info', duration = 5000) => {
+  const addToast = useCallback((message, type = 'info', options = {}) => {
     const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
+    const duration = options?.undoAction ? 8000 : 5000;
+    setToasts(prev => [...prev, { id, message, type, undoAction: options?.undoAction }]);
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, duration);

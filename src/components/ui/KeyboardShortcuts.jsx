@@ -1,4 +1,5 @@
-import { X, Keyboard } from 'lucide-react';
+import { useState } from 'react';
+import { X, Keyboard, Search, ChevronRight } from 'lucide-react';
 import './KeyboardShortcuts.css';
 
 const shortcuts = [
@@ -14,7 +15,7 @@ const shortcuts = [
     ]
   },
   {
-    category: 'Actions',
+    category: 'Message Actions',
     items: [
       { keys: ['c'], description: 'Compose new email' },
       { keys: ['r'], description: 'Reply' },
@@ -28,25 +29,39 @@ const shortcuts = [
     ]
   },
   {
-    category: 'Selection',
+    category: 'Selection & Movement',
     items: [
-      { keys: ['x'], description: 'Select email' },
+      { keys: ['x'], description: 'Select message' },
       { keys: ['*', 'a'], description: 'Select all' },
-      { keys: ['*', 'n'], description: 'Deselect all' },
+      { keys: ['n'], description: 'Next message' },
+      { keys: ['p'], description: 'Previous message' },
+      { keys: ['j'], description: 'Next message' },
+      { keys: ['k'], description: 'Previous message' },
+      { keys: ['Enter'], description: 'Open message' },
     ]
   },
   {
     category: 'Interface',
     items: [
       { keys: ['/'], description: 'Focus search' },
-      { keys: ['?'], description: 'Show keyboard shortcuts' },
+      { keys: ['?'], description: 'Show shortcuts' },
       { keys: ['Ctrl', 'k'], description: 'Command palette' },
-      { keys: ['Esc'], description: 'Close dialog' },
+      { keys: ['Esc'], description: 'Close / Clear selection' },
     ]
   }
 ];
 
 export function KeyboardShortcuts({ open, onClose }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
+
+  const filteredShortcuts = shortcuts.map(section => ({
+    ...section,
+    items: section.items.filter(item => 
+      item.description.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  })).filter(section => section.items.length > 0);
+
   if (!open) return null;
 
   return (
@@ -62,8 +77,36 @@ export function KeyboardShortcuts({ open, onClose }) {
           </button>
         </div>
         
+        <div className="shortcuts-search">
+          <Search size={16} />
+          <input
+            type="text"
+            placeholder="Search shortcuts..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <div className="shortcuts-categories">
+          <button 
+            className={`category-btn ${activeCategory === 'all' ? 'active' : ''}`}
+            onClick={() => setActiveCategory('all')}
+          >
+            All
+          </button>
+          {shortcuts.map(section => (
+            <button 
+              key={section.category}
+              className={`category-btn ${activeCategory === section.category ? 'active' : ''}`}
+              onClick={() => setActiveCategory(section.category)}
+            >
+              {section.category}
+            </button>
+          ))}
+        </div>
+        
         <div className="shortcuts-content">
-          {shortcuts.map((section) => (
+          {(activeCategory === 'all' ? filteredShortcuts : filteredShortcuts.filter(s => s.category === activeCategory)).map((section) => (
             <div key={section.category} className="shortcuts-section">
               <h3>{section.category}</h3>
               <div className="shortcuts-list">
@@ -83,7 +126,9 @@ export function KeyboardShortcuts({ open, onClose }) {
         </div>
         
         <div className="shortcuts-footer">
-          Press <kbd>?</kbd> to toggle this dialog
+          <span>Press <kbd>?</kbd> to toggle this dialog</span>
+          <span className="footer-sep">|</span>
+          <span><kbd>Esc</kbd> to close</span>
         </div>
       </div>
     </div>

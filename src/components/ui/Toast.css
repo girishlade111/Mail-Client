@@ -70,6 +70,25 @@
   color: var(--text);
 }
 
+.toast-undo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.toast-undo:hover {
+  background: var(--accent-subtle);
+}
+
 @keyframes fadeOut {
   from { opacity: 1; }
   to { opacity: 0; }

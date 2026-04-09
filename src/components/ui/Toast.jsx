@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { X, CheckCircle, AlertCircle, Info, AlertTriangle, Undo2 } from 'lucide-react';
 import './Toast.css';
 
 const icons = {
@@ -9,28 +9,48 @@ const icons = {
   info: Info,
 };
 
-export function Toast({ message, type = 'info', onClose, duration = 5000 }) {
+export function Toast({ message, type = 'info', onClose, duration = 5000, undoAction }) {
   const [isExiting, setIsExiting] = useState(false);
   const Icon = icons[type] || Info;
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsExiting(true);
-      setTimeout(onClose, 300);
-    }, duration);
-
-    return () => clearTimeout(timer);
-  }, [duration, onClose]);
+    if (undoAction) {
+      const timer = setTimeout(() => {
+        setIsExiting(true);
+        setTimeout(onClose, 300);
+      }, 7000);
+      return () => clearTimeout(timer);
+    } else {
+      const timer = setTimeout(() => {
+        setIsExiting(true);
+        setTimeout(onClose, 300);
+      }, duration);
+      return () => clearTimeout(timer);
+    }
+  }, [duration, onClose, undoAction]);
 
   const handleClose = () => {
     setIsExiting(true);
     setTimeout(onClose, 300);
   };
 
+  const handleUndo = useCallback(() => {
+    if (undoAction) {
+      undoAction();
+      handleClose();
+    }
+  }, [undoAction]);
+
   return (
     <div className={`toast toast-${type} ${isExiting ? 'exiting' : ''}`}>
       <Icon size={18} className="toast-icon" />
       <span className="toast-message">{message}</span>
+      {undoAction && (
+        <button className="toast-undo" onClick={handleUndo}>
+          <Undo2 size={14} />
+          Undo
+        </button>
+      )}
       <button className="toast-close" onClick={handleClose}>
         <X size={16} />
       </button>
@@ -46,7 +66,9 @@ export function ToastContainer({ toasts, onRemove }) {
           key={toast.id}
           message={toast.message}
           type={toast.type}
+          undoAction={toast.undoAction}
           onClose={() => onRemove(toast.id)}
+          duration={toast.undoAction ? 8000 : 5000}
         />
       ))}
     </div>

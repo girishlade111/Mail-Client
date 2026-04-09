@@ -292,7 +292,10 @@ function MailApp() {
     activeCategory,
     isLoading,
     markAllAsRead,
-    density
+    density,
+    toggleStar,
+    addLabel,
+    markAsImportant
   } = useMail();
   const { 
     sidebarOpen, 
@@ -341,11 +344,23 @@ function MailApp() {
     deselectAll();
   }, [deselectAll]);
 
-  const handleBulkMove = useCallback((folder) => {
+  const handleBulkMove = useCallback((folder, folderName) => {
+    const previousFolders = {};
+    selectedEmails.forEach(id => {
+      const email = emails.find(e => e.id === id);
+      if (email) previousFolders[id] = email.folder;
+    });
     selectedEmails.forEach(id => moveToFolder(id, folder));
-    addToast(`Moved ${selectedEmails.length} messages to ${folder}`);
+    addToast(`Moved ${selectedEmails.length} messages to ${folderName || folder}`, 'success', {
+      undoAction: () => {
+        Object.entries(previousFolders).forEach(([id, prevFolder]) => {
+          moveToFolder(id, prevFolder);
+        });
+        addToast('Moved back', 'info');
+      }
+    });
     deselectAll();
-  }, [selectedEmails, moveToFolder, addToast, deselectAll]);
+  }, [selectedEmails, moveToFolder, addToast, deselectAll, emails]);
 
   const handleBulkAddLabel = useCallback((_labelId) => {
     addToast(`Label added to ${selectedEmails.length} messages`);
@@ -367,10 +382,12 @@ function MailApp() {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setCommandPaletteOpen(true);
+        return;
       }
-      if (e.key === '?' && !e.target.matches('input, textarea')) {
+      if (e.key === '?' && !e.target.matches('input, textarea, [contenteditable]')) {
         e.preventDefault();
         setShortcutsOpen(true);
+        return;
       }
       if (e.key === 'Escape') {
         setCommandPaletteOpen(false);
@@ -378,36 +395,206 @@ function MailApp() {
         if (selectedEmails.length > 0) {
           deselectAll();
         }
+        return;
       }
       
-      if (currentView === 'main' && emails.length > 0 && !e.target.matches('input, textarea')) {
-        if (e.key === 'ArrowDown') {
+      if (currentView === 'main' && emails.length > 0 && !e.target.matches('input, textarea, [contenteditable]')) {
+        const email = emails[focusedIndex];
+        
+        if (e.key === '/' && !e.metaKey && !e.ctrlKey) {
+          e.preventDefault();
+          document.querySelector('.search-input')?.focus();
+          return;
+        }
+        
+        if (e.key === 'ArrowDown' || e.key === 'j') {
           e.preventDefault();
           setFocusedIndex(prev => Math.min(prev + 1, emails.length - 1));
+          return;
         }
-        if (e.key === 'ArrowUp') {
+        if (e.key === 'ArrowUp' || e.key === 'k') {
           e.preventDefault();
           setFocusedIndex(prev => Math.max(prev - 1, 0));
+          return;
         }
-        if (e.key === 'Enter' && focusedIndex >= 0) {
+        if (e.key === 'Enter') {
           e.preventDefault();
-          const email = emails[focusedIndex];
-          if (email) handleEmailSelect(email);
+          const em = emails[focusedIndex];
+          if (em) handleEmailSelect(em);
+          return;
         }
-        if (e.key === ' ' && focusedIndex >= 0) {
+        
+        if (e.key === 'x') {
           e.preventDefault();
-          const email = emails[focusedIndex];
           if (email) {
             const isSelected = selectedEmails.includes(email.id);
             handleCheckChange(email.id, !isSelected);
           }
+          return;
         }
+        
+        if (e.key === ' ' && !e.shiftKey) {
+          e.preventDefault();
+          if (email) {
+            const isSelected = selectedEmails.includes(email.id);
+            handleCheckChange(email.id, !isSelected);
+          }
+          return;
+        }
+        
+        if (e.key === 'r' && !e.metaKey && !e.ctrlKey) {
+          e.preventDefault();
+          setComposeOpen(true);
+          return;
+        }
+        
+        if (e.key === 'c' && !e.metaKey && !e.ctrlKey) {
+          e.preventDefault();
+          setComposeOpen(true);
+          return;
+        }
+        
+        if ((e.key === 'e' || e.key === 'e') && !e.metaKey && !e.ctrlKey) {
+          e.preventDefault();
+          if (selectedEmails.length > 0) {
+            selectedEmails.forEach(id => archiveEmail(id));
+            addToast(`Archived ${selectedEmails.length} messages`);
+            deselectAll();
+          } else if (email) {
+            archiveEmail(email.id);
+            addToast('Archived message');
+          }
+          return;
+        }
+        
+        if (e.key === '#' || e.key === 'Delete') {
+          e.preventDefault();
+          if (selectedEmails.length > 0) {
+            selectedEmails.forEach(id => deleteEmail(id));
+            addToast(`Moved ${selectedEmails.length} messages to trash`);
+            deselectAll();
+          } else if (email) {
+            deleteEmail(email.id);
+            addToast('Moved to trash');
+          }
+          return;
+        }
+        
+        if (!e.metaKey && !e.ctrlKey && e.key === 's') {
+          e.preventDefault();
+          if (email) {
+            toggleStar(email.id);
+          } else if (selectedEmails.length > 0) {
+            selectedEmails.forEach(id => toggleStar(id));
+            addToast(`Starred ${selectedEmails.length} messages`);
+          }
+          return;
+        }
+        
+        if (!e.metaKey && !e.ctrlKey && e.key === 'u') {
+          e.preventDefault();
+          if (selectedEmails.length > 0) {
+            selectedEmails.forEach(id => markAsUnread(id));
+            addToast(`Marked ${selectedEmails.length} as unread`);
+            deselectAll();
+          } else if (email) {
+            markAsUnread(email.id);
+            addToast('Marked as unread');
+          }
+          return;
+        }
+        
+        if (!e.metaKey && !e.ctrlKey && e.key === '!') {
+          e.preventDefault();
+          if (selectedEmails.length > 0) {
+            selectedEmails.forEach(id => markAsImportant(id));
+            addToast(`Marked ${selectedEmails.length} as important`);
+            deselectAll();
+          } else if (email) {
+            markAsImportant(email.id);
+            addToast('Marked as important');
+          }
+          return;
+        }
+        
+        if (e.key === '*' && !e.metaKey && !e.ctrlKey) {
+          e.preventDefault();
+          handleSelectAll();
+          return;
+        }
+        
+        if (!e.metaKey && !e.ctrlKey && e.key === 'a') {
+          e.preventDefault();
+          handleSelectAll();
+          return;
+        }
+        
+        if (!e.metaKey && !e.ctrlKey && e.key === 'n') {
+          e.preventDefault();
+          const nextEmail = emails[focusedIndex + 1];
+          if (nextEmail) {
+            setFocusedIndex(focusedIndex + 1);
+            handleEmailSelect(nextEmail);
+          }
+          return;
+        }
+        
+        if (!e.metaKey && !e.ctrlKey && e.key === 'p') {
+          e.preventDefault();
+          const prevEmail = emails[focusedIndex - 1];
+          if (prevEmail) {
+            setFocusedIndex(focusedIndex - 1);
+            handleEmailSelect(prevEmail);
+          }
+          return;
+        }
+      }
+      
+      if ((e.key === 'g' || e.key === 'G') && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        
+        const pendingG = window.__pendingGKey = window.__pendingGKey || {};
+        
+        const handleGTimeout = () => {
+          delete window.__pendingGKey;
+        };
+        
+        if (!window.__pendingGKey) {
+          window.__pendingGKey = { timeout: setTimeout(handleGTimeout, 1000) };
+          return;
+        }
+        
+        clearTimeout(window.__pendingGKey.timeout);
+        const secondKey = e.key.toLowerCase();
+        
+        switch (secondKey) {
+          case 'i':
+            setCurrentFolder('inbox');
+            break;
+          case 's':
+            setCurrentFolder('starred');
+            break;
+          case 'd':
+            setCurrentFolder('drafts');
+            break;
+          case 't':
+            setCurrentFolder('sent');
+            break;
+          case 'a':
+            setCurrentFolder('archive');
+            break;
+          case 'c':
+            setCurrentView('contacts');
+            break;
+        }
+        
+        delete window.__pendingGKey;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [setCommandPaletteOpen, setShortcutsOpen, selectedEmails, deselectAll, currentView, emails, focusedIndex, handleCheckChange, handleEmailSelect]);
+  }, [setCommandPaletteOpen, setShortcutsOpen, selectedEmails, deselectAll, currentView, emails, focusedIndex, handleCheckChange, handleEmailSelect, setComposeOpen, archiveEmail, deleteEmail, toggleStar, markAsUnread, markAsImportant, handleSelectAll, setCurrentFolder, setCurrentView, addToast]);
 
   const handleBackToList = () => {
     setSelectedEmail(null);
