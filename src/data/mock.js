@@ -34,12 +34,15 @@ export const calendarEvents = [
 ];
 
 export const accounts = [
-  { id: 'account-1', name: 'Alex Morgan', email: 'alex@flowmail.com', type: 'personal', provider: 'flowmail', color: '#4361ee', isDefault: true, storageUsed: 2.4, storageTotal: 15, syncState: 'synced' },
+  { id: 'account-1', name: 'Alex Morgan', email: 'alex@flowmail.com', type: 'personal', provider: 'flowmail', color: '#4361ee', isDefault: true, storageUsed: 2.4, storageTotal: 15, syncState: 'synced', signature: 'Sent from my Flowmail' },
+  { id: 'account-2', name: 'Work Email', email: 'alex@company.com', type: 'business', provider: 'gmail', color: '#22c55e', isDefault: false, storageUsed: 8.2, storageTotal: 30, syncState: 'synced', signature: 'Alex Morgan | Developer' },
+  { id: 'account-3', name: 'Team Support', email: 'support@company.com', type: 'shared', provider: 'custom', color: '#f59e0b', isDefault: false, storageUsed: 15.6, storageTotal: 50, syncState: 'synced', signature: null },
 ];
 
 export const emails = [
   {
     id: 'email-001',
+    accountId: 'account-1',
     threadId: 'thread-001',
     subject: 'Q4 Design Review — Final mockups attached',
     body: `<p>Hey team,</p><p>I've attached the final mockups for the Q4 redesign project. These include all the changes we discussed in our last meeting.</p><p>Key updates:</p><ul><li>New homepage hero section</li><li>Updated navigation hierarchy</li><li>Mobile-responsive breakpoints</li></ul><p>Please review and let me know if you have any questions before our meeting tomorrow.</p><p>Best regards,<br>Sarah</p>`,
@@ -57,6 +60,7 @@ export const emails = [
   },
   {
     id: 'email-002',
+    accountId: 'account-1',
     threadId: 'thread-001',
     subject: 'Re: Q4 Design Review — Final mockups attached',
     body: `<p>Thanks Sarah! These look great. I'll review them this evening.</p><p>Quick question - did we get sign-off on the color scheme changes?</p><p>— Alex</p>`,

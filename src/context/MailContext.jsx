@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { emails as initialEmails, labels as initialLabels, contacts, tasks, calendarEvents, currentUser, accounts } from '../data/mock';
+import { emails as initialEmails, labels as initialLabels, contacts, tasks, calendarEvents, currentUser, accounts as mockAccounts } from '../data/mock';
 
 const MailContext = createContext(null);
 
@@ -57,6 +57,10 @@ export function MailProvider({ children }) {
   const [labels, setLabels] = useState(enhancedLabels);
   const [categories, setCategories] = useState(defaultCategories);
   const [focusedInboxEnabled, setFocusedInboxEnabled] = useState(true);
+  
+  const [accounts, setAccounts] = useState(mockAccounts);
+  const [activeAccountId, setActiveAccountId] = useState(mockAccounts[0]?.id || 'account-1');
+  const [unifiedInboxEnabled, setUnifiedInboxEnabled] = useState(false);
   
   const [searchState, setSearchState] = useState(initialSearchState);
   const [searchHistory, setSearchHistory] = useState([
@@ -503,6 +507,8 @@ export function MailProvider({ children }) {
 
   const filteredEmails = useMemo(() => {
     let result = emails.filter((email) => {
+      const matchesAccount = unifiedInboxEnabled || email.accountId === activeAccountId;
+      
       const matchesFolder = email.folder === currentFolder;
       
       let matchesSearch = true;
@@ -519,7 +525,7 @@ export function MailProvider({ children }) {
         matchesCategory = email.category === activeCategory;
       }
       
-      return matchesFolder && matchesSearch && matchesCategory;
+      return matchesAccount && matchesFolder && matchesSearch && matchesCategory;
     });
 
     if (sortOrder === 'newest') {
@@ -546,11 +552,33 @@ export function MailProvider({ children }) {
     }
 
     return result;
-  }, [emails, currentFolder, searchQuery, activeCategory, sortOrder]);
+  }, [emails, currentFolder, searchQuery, activeCategory, sortOrder, activeAccountId, unifiedInboxEnabled]);
 
   const starredEmails = useMemo(() => {
     return emails.filter(email => email.starred && email.folder !== 'trash' && email.folder !== 'spam');
   }, [emails]);
+
+  const getActiveAccount = useCallback(() => {
+    return accounts.find(a => a.id === activeAccountId) || accounts[0];
+  }, [activeAccountId, accounts]);
+
+  const switchAccount = useCallback((accountId) => {
+    setActiveAccountId(accountId);
+    setUnifiedInboxEnabled(false);
+  }, []);
+
+  const toggleUnifiedInbox = useCallback(() => {
+    setUnifiedInboxEnabled(prev => !prev);
+  }, []);
+
+  const getAccountById = useCallback((accountId) => {
+    return accounts.find(a => a.id === accountId);
+  }, [accounts]);
+
+  const getAccountColor = useCallback((emailAccountId) => {
+    const account = accounts.find(a => a.id === emailAccountId);
+    return account?.color || '#6b7280';
+  }, [accounts]);
 
   const markAsRead = useCallback((emailId) => {
     setEmails(prev =>
@@ -790,6 +818,14 @@ export function MailProvider({ children }) {
     isLoading,
     setIsLoading,
     starredEmails,
+    accounts,
+    activeAccountId,
+    unifiedInboxEnabled,
+    getActiveAccount,
+    switchAccount,
+    toggleUnifiedInbox,
+    getAccountById,
+    getAccountColor,
     threads,
     getThread,
     getActiveThread,

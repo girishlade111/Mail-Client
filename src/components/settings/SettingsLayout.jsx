@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Settings, User, Bell, Palette, Shield, HardDrive, Key, Mail, Filter, Tag, Link2, Zap, Languages, Calendar, Moon, Sun, Edit, Clock, Inbox, FolderOpen } from 'lucide-react';
+import { Settings, User, Bell, Palette, Shield, HardDrive, Key, Mail, Filter, Tag, Link2, Zap, Languages, Calendar, Moon, Sun, Edit, Clock, Inbox, FolderOpen, Plus } from 'lucide-react';
 import { Switch } from '../ui';
 import { LabelsManager } from '../labels/LabelsManager';
 import { CategoryManager } from '../mail/FilterChips';
 import { RulesManager } from '../rules/RulesManager';
+import { useMail } from '../../context/MailContext';
 import './Settings.css';
 
 const settingsTabs = [
@@ -80,7 +81,48 @@ export function SettingsInbox() {
 }
 
 export function SettingsAccounts() {
-  return <div className="settings-section"><h3>Accounts</h3></div>;
+  const { accounts, activeAccountId, switchAccount, getActiveAccount, setAccounts } = useMail();
+  
+  return (
+    <div className="settings-section">
+      <h3>Accounts</h3>
+      <div className="accounts-list">
+        {accounts.map(account => (
+          <div key={account.id} className={`account-card ${activeAccountId === account.id ? 'active' : ''}`}>
+            <div className="account-card-header">
+              <div className="account-card-avatar" style={{ backgroundColor: account.color }}>
+                {account.name.split(' ').map(n => n[0]).join('')}
+              </div>
+              <div className="account-card-info">
+                <span className="account-card-name">{account.name}</span>
+                <span className="account-card-email">{account.email}</span>
+                <span className="account-card-type">{account.type} • {account.provider}</span>
+              </div>
+              {account.isDefault && <span className="default-badge">Default</span>}
+            </div>
+            <div className="account-card-storage">
+              <div className="storage-bar">
+                <div className="storage-used" style={{ width: `${(account.storageUsed / account.storageTotal) * 100}%`, backgroundColor: account.color }} />
+              </div>
+              <span className="storage-text">{account.storageUsed} GB of {account.storageTotal} GB used</span>
+            </div>
+            <div className="account-card-footer">
+              <span className={`sync-status ${account.syncState}`}>
+                {account.syncState === 'synced' ? '✓ Synced' : account.syncState === 'syncing' ? '⟳ Syncing' : '⚠ Error'}
+              </span>
+              <div className="account-card-actions">
+                <button className="account-action-btn">Edit</button>
+                {!account.isDefault && <button className="account-action-btn danger">Remove</button>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button className="add-account-btn">
+        <Plus size={16} /> Add account
+      </button>
+    </div>
+  );
 }
 
 export function SettingsSignatures() {

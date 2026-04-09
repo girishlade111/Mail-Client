@@ -9,7 +9,9 @@ import './MailRow.css';
 export function MailRow({ email, isSelected, onClick, isChecked, onCheckChange }) {
   const [showActions, setShowActions] = useState(false);
   const { addToast } = useUI();
-  const { toggleStar, markAsRead, markAsUnread, archiveEmail, deleteEmail, labels } = useMail();
+  const { toggleStar, markAsRead, markAsUnread, archiveEmail, deleteEmail, labels, getAccountColor } = useMail();
+
+  const accountColor = getAccountColor(email.accountId);
   
   const formatDate = (date) => {
     const now = new Date();
@@ -80,6 +82,7 @@ export function MailRow({ email, isSelected, onClick, isChecked, onCheckChange }
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
+      <div className="account-strip" style={{ backgroundColor: accountColor }} title="Account" />
       <div className="mail-row-left">
         <label className="mail-checkbox" onClick={(e) => e.stopPropagation()}>
           <input

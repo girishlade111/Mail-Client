@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Bell, Settings, Menu, Sun, Moon, Plus, ChevronDown } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Bell, Settings, Menu, Sun, Moon, Plus, ChevronDown, Inbox, Check, X } from 'lucide-react';
 import { useMail } from '../context/MailContext';
 import { useUI } from '../context/UIContext';
 import { useTheme } from '../context/ThemeContext';
@@ -8,16 +8,30 @@ import { SearchBar } from './search/SearchBar';
 import './Header.css';
 
 export function Header({ onMenuClick }) {
-  const { searchQuery, setSearchQuery, isSearchActive, setIsSearchActive } = useMail();
+  const { searchQuery, setSearchQuery, isSearchActive, setIsSearchActive, accounts, activeAccountId, unifiedInboxEnabled, switchAccount, toggleUnifiedInbox, getActiveAccount } = useMail();
   const { openCompose, goToSettings } = useUI();
   const { theme, toggleTheme } = useTheme();
   const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowAccountMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSearch = (query) => {
     if (query) {
       setIsSearchActive(true);
     }
   };
+
+  const activeAccount = getActiveAccount();
+  const initials = activeAccount?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || '??';
 
   return (
     <header className="header">
@@ -55,31 +69,73 @@ export function Header({ onMenuClick }) {
           <Settings size={18} />
         </Button>
         
-        <div className="account-switcher">
+        <div className="account-switcher" ref={menuRef}>
           <button className="account-btn" onClick={() => setShowAccountMenu(!showAccountMenu)}>
-            <Avatar fallback="AM" size="sm" />
+            <div className="account-avatar" style={{ backgroundColor: activeAccount?.color || '#4361ee' }}>
+              {initials}
+            </div>
             <ChevronDown size={14} className="account-chevron" />
           </button>
+          
           {showAccountMenu && (
             <div className="account-menu">
               <div className="account-menu-header">
-                <span className="account-menu-email">alex@flowmail.com</span>
-              </div>
-              <div className="account-menu-items">
-                <button className="account-menu-item active">
-                  <div className="account-menu-avatar" style={{ backgroundColor: '#4361ee' }}>
-                    AM
-                  </div>
-                  <div className="account-menu-info">
-                    <span className="account-menu-name">Alex Morgan</span>
-                    <span className="account-menu-email-small">alex@flowmail.com</span>
-                  </div>
+                <span>Select account</span>
+                <button className="close-menu" onClick={() => setShowAccountMenu(false)}>
+                  <X size={14} />
                 </button>
               </div>
+              
+              <div className="account-menu-section">
+                <button 
+                  className={`account-menu-item ${unifiedInboxEnabled ? 'active' : ''}`}
+                  onClick={() => {
+                    toggleUnifiedInbox();
+                    setShowAccountMenu(false);
+                  }}
+                >
+                  <div className="account-menu-avatar unified" style={{ backgroundColor: '#6366f1' }}>
+                    <Inbox size={14} />
+                  </div>
+                  <div className="account-menu-info">
+                    <span className="account-menu-name">All accounts</span>
+                    <span className="account-menu-email-small">Unified inbox</span>
+                  </div>
+                  {unifiedInboxEnabled && <Check size={14} className="check-icon" />}
+                </button>
+              </div>
+              
+              <div className="account-menu-divider" />
+              
+              <div className="account-menu-section">
+                {accounts.map((account) => (
+                  <button 
+                    key={account.id}
+                    className={`account-menu-item ${!unifiedInboxEnabled && activeAccountId === account.id ? 'active' : ''}`}
+                    onClick={() => {
+                      switchAccount(account.id);
+                      setShowAccountMenu(false);
+                    }}
+                  >
+                    <div className="account-menu-avatar" style={{ backgroundColor: account.color }}>
+                      {account.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div className="account-menu-info">
+                      <span className="account-menu-name">{account.name}</span>
+                      <span className="account-menu-email-small">{account.email}</span>
+                    </div>
+                    {!unifiedInboxEnabled && activeAccountId === account.id && <Check size={14} className="check-icon" />}
+                  </button>
+                ))}
+              </div>
+              
               <div className="account-menu-footer">
                 <button className="account-add-btn">
                   <Plus size={16} />
                   Add account
+                </button>
+                <button className="account-manage-btn" onClick={() => { goToSettings(); setShowAccountMenu(false); }}>
+                  Manage accounts
                 </button>
               </div>
             </div>
