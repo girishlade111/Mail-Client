@@ -157,6 +157,7 @@ export function MailProvider({ children }) {
   }, [emails]);
 
   const performSearch = useCallback((searchState, allEmails) => {
+    const totalMB = (bytes) => bytes / (1024 * 1024);
     let results = [...allEmails];
     
     if (searchState.query) {
@@ -239,22 +240,26 @@ export function MailProvider({ children }) {
           switch (searchState.dateRange) {
             case 'today':
               return emailDate.toDateString() === now.toDateString();
-            case 'yesterday':
+            case 'yesterday': {
               const yesterday = new Date(now);
               yesterday.setDate(yesterday.getDate() - 1);
               return emailDate.toDateString() === yesterday.toDateString();
-            case 'this_week':
+            }
+            case 'this_week': {
               const weekAgo = new Date(now);
               weekAgo.setDate(weekAgo.getDate() - 7);
               return emailDate >= weekAgo;
-            case 'this_month':
+            }
+            case 'this_month': {
               const monthAgo = new Date(now);
               monthAgo.setMonth(monthAgo.getMonth() - 1);
               return emailDate >= monthAgo;
-            case 'older':
+            }
+            case 'older': {
               const monthAgoOld = new Date(now);
               monthAgoOld.setMonth(monthAgoOld.getMonth() - 1);
               return emailDate < monthAgoOld;
+            }
             default:
               return true;
           }
@@ -292,8 +297,6 @@ export function MailProvider({ children }) {
     
     return results;
   }, []);
-
-  const totalMB = (bytes) => bytes / (1024 * 1024);
 
   const searchResults = useMemo(() => {
     if (!isSearchActive) return [];
@@ -368,11 +371,12 @@ export function MailProvider({ children }) {
         matches = (email.attachments && email.attachments.length > 0);
         if (value === 'false') matches = !matches;
         break;
-      case 'size':
+      case 'size': {
         const sizeMB = (email.attachments || []).reduce((acc, att) => acc + (att.size || 0), 0) / (1024 * 1024);
         if (operator === 'greaterThan') matches = sizeMB > parseFloat(value);
         else if (operator === 'lessThan') matches = sizeMB < parseFloat(value);
         break;
+      }
       case 'read':
         matches = email.read === (value === 'true');
         break;
@@ -388,10 +392,11 @@ export function MailProvider({ children }) {
       case 'label':
         matches = email.labels.includes(value);
         break;
-      case 'senderDomain':
+      case 'senderDomain': {
         const domain = email.from.email.split('@')[1]?.toLowerCase() || '';
         matches = domain.includes(lowerValue);
         break;
+      }
       default:
         matches = false;
     }
@@ -1003,11 +1008,7 @@ export function MailProvider({ children }) {
     labels,
     categories,
     focusedInboxEnabled,
-    contacts,
-    tasks,
-    calendarEvents,
     currentUser,
-    accounts,
     searchQuery,
     setSearchQuery,
     activeCategory,
@@ -1021,7 +1022,6 @@ export function MailProvider({ children }) {
     isLoading,
     setIsLoading,
     starredEmails,
-    accounts,
     activeAccountId,
     unifiedInboxEnabled,
     getActiveAccount,

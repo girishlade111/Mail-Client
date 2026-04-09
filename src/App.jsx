@@ -295,7 +295,9 @@ function MailApp() {
     density,
     toggleStar,
     addLabel,
-    markAsImportant
+    markAsImportant,
+    selectedContact,
+    setSelectedContact
   } = useMail();
   const { 
     sidebarOpen, 

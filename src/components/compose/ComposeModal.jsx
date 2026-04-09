@@ -54,12 +54,13 @@ export function ComposeModal({ isOpen, onClose, initialData, draftId, mode: init
   const [fromAccount, setFromAccount] = useState(accounts[0]?.email || currentUser.email);
   const [signature, setSignature] = useState('');
   const [scheduledTime, setScheduledTime] = useState(null);
+  const [generatedDraftKey] = useState(() => `draft-${Date.now()}`);
   
   const editorRef = useRef(null);
   const fileInputRef = useRef(null);
   const autoSaveTimer = useRef(null);
 
-  const draftKey = draftId || `draft-${Date.now()}`;
+  const draftKey = draftId || generatedDraftKey;
 
   useEffect(() => {
     if (initialData?.replyTo) {
@@ -68,17 +69,6 @@ export function ComposeModal({ isOpen, onClose, initialData, draftId, mode: init
       if (initialData.body) setBody(initialData.body);
     }
   }, [initialData]);
-
-  useEffect(() => {
-    if (isOpen && !isMinimized) {
-      autoSaveTimer.current = setTimeout(() => {
-        handleSaveDraft(true);
-      }, 30000);
-    }
-    return () => {
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-    };
-  }, [to, subject, body, isOpen, isMinimized]);
 
   const handleSaveDraft = useCallback(async (isAutoSave = false) => {
     setIsSaving(true);
