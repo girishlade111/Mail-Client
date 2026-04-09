@@ -29,16 +29,34 @@ export const contactGroups = [
 ];
 
 export const tasks = [
-  { id: 'task-001', title: 'Review Q4 mockups from Sarah', completed: false, dueDate: '2026-04-02', priority: 'high', linkedEmailId: 'email-001' },
-  { id: 'task-002', title: 'Send invoice to Tech Corp', completed: false, dueDate: '2026-04-03', priority: 'medium', linkedEmailId: 'email-010' },
-  { id: 'task-003', title: 'Schedule team standup', completed: true, dueDate: '2026-03-31', priority: 'low', linkedEmailId: null },
-  { id: 'task-004', title: 'Update product roadmap', completed: false, dueDate: '2026-04-05', priority: 'high', linkedEmailId: 'email-015' },
+  { id: 'task-001', title: 'Review Q4 mockups from Sarah', completed: false, dueDate: '2026-04-02', priority: 'high', linkedEmailId: 'email-001', linkedContactId: 'contact-001', createdAt: '2026-03-31' },
+  { id: 'task-002', title: 'Send invoice to Tech Corp', completed: false, dueDate: '2026-04-03', priority: 'medium', linkedEmailId: 'email-010', linkedContactId: 'contact-003', createdAt: '2026-03-30' },
+  { id: 'task-003', title: 'Schedule team standup', completed: true, dueDate: '2026-03-31', priority: 'low', linkedEmailId: null, linkedContactId: null, createdAt: '2026-03-28' },
+  { id: 'task-004', title: 'Update product roadmap', completed: false, dueDate: '2026-04-05', priority: 'high', linkedEmailId: 'email-015', linkedContactId: 'contact-002', createdAt: '2026-03-29' },
+  { id: 'task-005', title: 'Follow up on server alert', completed: false, dueDate: '2026-04-01', priority: 'high', linkedEmailId: 'email-005', linkedContactId: null, createdAt: '2026-03-31' },
+  { id: 'task-006', title: 'Review invoice with James', completed: false, dueDate: '2026-04-07', priority: 'medium', linkedEmailId: 'email-006', linkedContactId: 'contact-007', createdAt: '2026-03-30' },
+  { id: 'task-007', title: 'Prepare presentation slides', completed: false, dueDate: '2026-04-10', priority: 'low', linkedEmailId: null, linkedContactId: 'contact-004', createdAt: '2026-03-29' },
 ];
 
 export const calendarEvents = [
-  { id: 'event-001', title: 'Design Review Meeting', date: '2026-04-01', startTime: '10:00', endTime: '11:00', attendees: ['sarah@designstudio.co'], location: 'Zoom', color: '#4361ee' },
-  { id: 'event-002', title: 'Team Standup', date: '2026-04-01', startTime: '09:00', endTime: '09:30', attendees: ['mike@flowmail.com'], location: 'Room 1', color: '#3b82f6' },
-  { id: 'event-003', title: 'Client Call - Tech Corp', date: '2026-04-02', startTime: '14:00', endTime: '15:00', attendees: ['emma@techcorp.com'], location: 'Phone', color: '#f59e0b' },
+  { id: 'event-001', title: 'Design Review Meeting', date: '2026-04-09', startTime: '10:00', endTime: '11:00', attendees: ['sarah@designstudio.co'], location: 'Zoom', color: '#4361ee', isAllDay: false },
+  { id: 'event-002', title: 'Team Standup', date: '2026-04-09', startTime: '09:00', endTime: '09:30', attendees: ['mike@flowmail.com'], location: 'Room 1', color: '#3b82f6', isAllDay: false },
+  { id: 'event-003', title: 'Client Call - Tech Corp', date: '2026-04-10', startTime: '14:00', endTime: '15:00', attendees: ['emma@techcorp.com'], location: 'Phone', color: '#f59e0b', isAllDay: false },
+  { id: 'event-004', title: '1:1 with Mike', date: '2026-04-11', startTime: '11:00', endTime: '11:30', attendees: ['mike@flowmail.com'], location: 'Room 2', color: '#8b5cf6', isAllDay: false },
+  { id: 'event-005', title: 'Sprint Planning', date: '2026-04-14', startTime: '10:00', endTime: '12:00', attendees: ['mike@flowmail.com', 'rachel@design.co'], location: 'Zoom', color: '#22c55e', isAllDay: false },
+  { id: 'event-006', title: 'All Hands Meeting', date: '2026-04-15', startTime: '09:00', endTime: '10:00', attendees: [], location: 'Main Hall', color: '#ef4444', isAllDay: false },
+];
+
+export const notes = [
+  { id: 'note-001', content: 'Call Sarah about project timeline - she mentioned deadline shifted to April 15th', pinned: true, linkedEmailId: 'email-001', linkedContactId: 'contact-001', createdAt: '2026-03-31', updatedAt: '2026-03-31' },
+  { id: 'note-002', content: 'Remember to update the API documentation after the standup', pinned: false, linkedEmailId: null, linkedContactId: null, createdAt: '2026-03-28', updatedAt: '2026-03-28' },
+  { id: 'note-003', content: 'James mentioned new billing system - need to review invoice format', pinned: true, linkedEmailId: 'email-006', linkedContactId: 'contact-007', createdAt: '2026-03-30', updatedAt: '2026-03-30' },
+  { id: 'note-004', content: 'Tech Corp quarterly review - prepare agenda items', pinned: false, linkedEmailId: 'email-003', linkedContactId: 'contact-003', createdAt: '2026-03-29', updatedAt: '2026-03-29' },
+];
+
+export const reminders = [
+  { id: 'reminder-001', emailId: 'email-005', snoozeUntil: '2026-04-10', notes: 'Follow up on server issue - check if resolved' },
+  { id: 'reminder-002', emailId: 'email-001', snoozeUntil: '2026-04-09', notes: 'Review Q4 mockups after meeting' },
 ];
 
 export const accounts = [

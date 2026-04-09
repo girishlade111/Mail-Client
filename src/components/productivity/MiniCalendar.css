@@ -152,3 +152,130 @@
   font-size: 12px;
   color: var(--text-tertiary);
 }
+
+.day-indicators {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.day-event-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.day-reminder-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--warning);
+}
+
+.calendar-day.selected {
+  background: var(--bg-hover);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.selected-day-events {
+  padding: 12px;
+  margin-top: 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+.selected-day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.selected-date {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.create-event-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.create-event-btn:hover {
+  background: var(--bg-hover);
+  color: var(--accent);
+}
+
+.events-section {
+  margin-bottom: 8px;
+}
+
+.events-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.no-events {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+.upcoming-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.upcoming-header h4 {
+  margin: 0;
+}
+
+.today-btn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.today-btn:hover {
+  background: var(--bg-hover);
+}
+
+.empty-events {
+  padding: 12px 0;
+}
+
+.empty-events p {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin: 0;
+}
+
+.event-item.reminder {
+  padding: 4px 0;
+  border-left: 2px solid var(--warning);
+  padding-left: 8px;
+}
+
+.event-item.reminder .event-title {
+  font-size: 12px;
+}

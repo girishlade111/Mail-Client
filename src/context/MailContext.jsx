@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import { emails as initialEmails, labels as initialLabels, contacts as initialContacts, contactGroups, tasks, calendarEvents, currentUser, accounts as mockAccounts } from '../data/mock';
+import { emails as initialEmails, labels as initialLabels, contacts as initialContacts, contactGroups, tasks as initialTasks, calendarEvents as initialCalendarEvents, notes as initialNotes, reminders as initialReminders, currentUser, accounts as mockAccounts } from '../data/mock';
 
 const MailContext = createContext(null);
 
@@ -64,6 +64,11 @@ export function MailProvider({ children }) {
   
   const [contacts, setContacts] = useState(initialContacts);
   const [selectedContact, setSelectedContact] = useState(null);
+  
+  const [tasks, setTasks] = useState(initialTasks);
+  const [calendarEvents, setCalendarEvents] = useState(initialCalendarEvents);
+  const [notes, setNotes] = useState(initialNotes);
+  const [reminders, setReminders] = useState(initialReminders);
   
   const [searchState, setSearchState] = useState(initialSearchState);
   const [searchHistory, setSearchHistory] = useState([
@@ -567,6 +572,142 @@ export function MailProvider({ children }) {
     return contacts.find(c => c.email.toLowerCase() === email.toLowerCase());
   }, [contacts]);
 
+  const addTask = useCallback((task) => {
+    const newTask = {
+      ...task,
+      id: `task-${Date.now()}`,
+      completed: false,
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+    setTasks(prev => [...prev, newTask]);
+    return newTask;
+  }, []);
+
+  const updateTask = useCallback((taskId, updates) => {
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updates } : t));
+  }, []);
+
+  const deleteTask = useCallback((taskId) => {
+    setTasks(prev => prev.filter(t => t.id !== taskId));
+  }, []);
+
+  const toggleTaskComplete = useCallback((taskId) => {
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t));
+  }, []);
+
+  const createTaskFromEmail = useCallback((emailId, title) => {
+    const newTask = {
+      id: `task-${Date.now()}`,
+      title,
+      completed: false,
+      dueDate: new Date(Date.now() + 86400000 * 3).toISOString().split('T')[0],
+      priority: 'medium',
+      linkedEmailId: emailId,
+      linkedContactId: null,
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+    setTasks(prev => [newTask, ...prev]);
+    return newTask;
+  }, []);
+
+  const addNote = useCallback((note) => {
+    const newNote = {
+      ...note,
+      id: `note-${Date.now()}`,
+      pinned: false,
+      createdAt: new Date().toISOString().split('T')[0],
+      updatedAt: new Date().toISOString().split('T')[0],
+    };
+    setNotes(prev => [newNote, ...prev]);
+    return newNote;
+  }, []);
+
+  const updateNote = useCallback((noteId, updates) => {
+    setNotes(prev => prev.map(n => n.id === noteId ? { ...n, ...updates, updatedAt: new Date().toISOString().split('T')[0] } : n));
+  }, []);
+
+  const deleteNote = useCallback((noteId) => {
+    setNotes(prev => prev.filter(n => n.id !== noteId));
+  }, []);
+
+  const toggleNotePin = useCallback((noteId) => {
+    setNotes(prev => prev.map(n => n.id === noteId ? { ...n, pinned: !n.pinned } : n));
+  }, []);
+
+  const createNoteFromEmail = useCallback((emailId, content) => {
+    const newNote = {
+      id: `note-${Date.now()}`,
+      content,
+      pinned: false,
+      linkedEmailId: emailId,
+      linkedContactId: null,
+      createdAt: new Date().toISOString().split('T')[0],
+      updatedAt: new Date().toISOString().split('T')[0],
+    };
+    setNotes(prev => [newNote, ...prev]);
+    return newNote;
+  }, []);
+
+  const snoozeEmail = useCallback((emailId, snoozeUntil, notes = '') => {
+    const newReminder = {
+      id: `reminder-${Date.now()}`,
+      emailId,
+      snoozeUntil,
+      notes,
+    };
+    setReminders(prev => [...prev, newReminder]);
+    return newReminder;
+  }, []);
+
+  const unsnoozeEmail = useCallback((emailId) => {
+    setReminders(prev => prev.filter(r => r.emailId !== emailId));
+  }, []);
+
+  const getSnoozedEmails = useCallback(() => {
+    return reminders.filter(r => new Date(r.snoozeUntil) > new Date());
+  }, [reminders]);
+
+  const getUpcomingReminders = useCallback(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return reminders.filter(r => r.snoozeUntil >= today).sort((a, b) => new Date(a.snoozeUntil) - new Date(b.snoozeUntil));
+  }, [reminders]);
+
+  const getTodoTasks = useCallback(() => {
+    return tasks.filter(t => !t.completed);
+  }, [tasks]);
+
+  const getCompletedTasks = useCallback(() => {
+    return tasks.filter(t => t.completed);
+  }, [tasks]);
+
+  const getOverdueTasks = useCallback(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return tasks.filter(t => !t.completed && t.dueDate < today);
+  }, [tasks]);
+
+  const getTodayTasks = useCallback(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return tasks.filter(t => !t.completed && t.dueDate === today);
+  }, [tasks]);
+
+  const getUpcomingTasks = useCallback(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return tasks.filter(t => !t.completed && t.dueDate > today).sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+  }, [tasks]);
+
+  const getPinnedNotes = useCallback(() => {
+    return notes.filter(n => n.pinned);
+  }, [notes]);
+
+  const addCalendarEvent = useCallback((event) => {
+    const newEvent = {
+      ...event,
+      id: `event-${Date.now()}`,
+    };
+    setCalendarEvents(prev => [...prev, newEvent]);
+    return newEvent;
+  }, []);
+
   const filteredEmails = useMemo(() => {
     let result = emails.filter((email) => {
       const matchesAccount = unifiedInboxEnabled || email.accountId === activeAccountId;
@@ -952,6 +1093,31 @@ export function MailProvider({ children }) {
     toggleRule,
     duplicateRule,
     reorderRules,
+    tasks,
+    addTask,
+    updateTask,
+    deleteTask,
+    toggleTaskComplete,
+    createTaskFromEmail,
+    getTodoTasks,
+    getCompletedTasks,
+    getOverdueTasks,
+    getTodayTasks,
+    getUpcomingTasks,
+    calendarEvents,
+    addCalendarEvent,
+    notes,
+    addNote,
+    updateNote,
+    deleteNote,
+    toggleNotePin,
+    createNoteFromEmail,
+    getPinnedNotes,
+    reminders,
+    snoozeEmail,
+    unsnoozeEmail,
+    getSnoozedEmails,
+    getUpcomingReminders,
   };
 
   return <MailContext.Provider value={value}>{children}</MailContext.Provider>;

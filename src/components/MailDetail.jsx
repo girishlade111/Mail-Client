@@ -11,9 +11,11 @@ import { useMail } from '../context/MailContext';
 import { useUI } from '../context/UIContext';
 import './MailDetail.css';
 
+import { addDays } from 'date-fns';
+
 export function MailDetail({ email, onBack, onViewThread }) {
-  const { toggleStar, deleteEmail, moveToFolder, markAsUnread, labels, addLabel, archiveEmail } = useMail();
-  const { addToast, setComposeOpen } = useUI();
+  const { toggleStar, deleteEmail, moveToFolder, markAsUnread, labels, addLabel, archiveEmail, snoozeEmail, createTaskFromEmail, createNoteFromEmail } = useMail();
+  const { addToast, setComposeOpen, setRightPanelOpen, setRightPanelTab } = useUI();
   const [showCc, setShowCc] = useState(false);
   const [showBcc, setShowBcc] = useState(false);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
@@ -80,6 +82,22 @@ export function MailDetail({ email, onBack, onViewThread }) {
     { id: 'trash', name: 'Trash', icon: '🗑️' },
     { id: 'spam', name: 'Spam', icon: '⚠️' },
   ];
+
+  const getSnoozeDate = (optionId) => {
+    const today = new Date();
+    switch (optionId) {
+      case 'later_today':
+        return new Date(today.setHours(18, 0, 0, 0)).toISOString().split('T')[0];
+      case 'tomorrow_morning':
+        return addDays(new Date(), 1).toISOString().split('T')[0];
+      case 'tomorrow_evening':
+        return addDays(new Date(), 1).toISOString().split('T')[0];
+      case 'next_week':
+        return addDays(new Date(), 7).toISOString().split('T')[0];
+      default:
+        return addDays(new Date(), 1).toISOString().split('T')[0];
+    }
+  };
 
   const snoozeOptions = [
     { id: 'later_today', label: 'Later today', time: '6:00 PM' },
@@ -151,8 +169,12 @@ export function MailDetail({ email, onBack, onViewThread }) {
               <div className="dropdown-menu snooze-menu">
                 {snoozeOptions.map(opt => (
                   <button key={opt.id} className="dropdown-item" onClick={() => {
+                    const snoozeDate = getSnoozeDate(opt.id);
+                    snoozeEmail(email.id, snoozeDate, `Follow up: ${email.subject}`);
                     addToast(`Snoozed until ${opt.label}`);
                     setShowSnoozeMenu(false);
+                    setRightPanelOpen(true);
+                    setRightPanelTab('reminders');
                   }}>
                     <Clock size={14} />
                     <span>{opt.label}</span>
@@ -205,11 +227,23 @@ export function MailDetail({ email, onBack, onViewThread }) {
                 <button className="dropdown-item" onClick={() => { addToast('Notifications muted'); setShowActionsMenu(false); }}>
                   <BellOff size={14} /> Mute thread
                 </button>
-                <button className="dropdown-item" onClick={() => { addToast('Task created'); setShowActionsMenu(false); }}>
+                <button className="dropdown-item" onClick={() => { 
+                    createTaskFromEmail(email.id, email.subject);
+                    addToast('Task created'); 
+                    setShowActionsMenu(false);
+                    setRightPanelOpen(true);
+                    setRightPanelTab('tasks');
+                  }}>
                   <CheckSquare size={14} /> Add to tasks
                 </button>
-                <button className="dropdown-item" onClick={() => { addToast('Calendar event created'); setShowActionsMenu(false); }}>
-                  <Calendar size={14} /> Create event
+                <button className="dropdown-item" onClick={() => { 
+                    createNoteFromEmail(email.id, `Note: ${email.subject}`);
+                    addToast('Note created'); 
+                    setShowActionsMenu(false);
+                    setRightPanelOpen(true);
+                    setRightPanelTab('notes');
+                  }}>
+                  <FileText size={14} /> Add to notes
                 </button>
               </div>
             )}
